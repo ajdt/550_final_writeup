@@ -1,4 +1,4 @@
-\documentclass[preprint,12pt]{elsarticle}
+\documentclass[preprint,10pt]{elsarticle}
 \setlength{\parindent}{0pt}
 \usepackage[hscale=0.8, vscale=0.8]{geometry}
 
@@ -136,8 +136,126 @@ fat robots, abstract pattern formation, mobile robots
 \label{}
 
 
+\section{Notation} 
+% fix up later, right now just contains ideas
+refer to a state $S$ over $n$ robots as $S = (s_1, \ldots s_n)$ where each $s_i \in \RR^2$. For simplicity
+$S$ refers to the global view. In refering to the local view of a robot use $S_i$. View is function of orientation
+of each bot
+
+
+
+$\EE$ is the initial state of all robots, $\PP$ is the final state.
+
 % Armando insert writing here!!!
 \subsection{Breaking ties even case } 
+	In this section we follow up on a result in \cite{flocchini12distrib} where it's proved that
+	APF is solvable deterministically with a OneAxis agreement if the number of robots $n$ is
+	odd. Here, we develop a randomized algorithm that solves APF for any number of robots
+	and extends the result to the disk-based model. Formally, \cite{flocchini12distrib} states :
+	\begin{theorem} 
+		Assuming OneAxis, APF is solvable only if $n$ is odd, and this can be done in ASYNC.
+	\end{theorem} 
+
+	The result implies that in the a deterministic setting, OneAxis is not a strong enough 
+	assumption to solve the APF problem for an even number of robots. Rather than making 
+	stronger assumptions about prior consensus, our result applies randomness to the same setting
+	as \cite{flocchini12distrib}. We show that this is a strong enough assumption to solve the 
+	APF problem with OneAxis in ASYNC. 
+
+	The algorithm we develop proceeds from an initial configuration $\EE$ to produce an input pattern $P$.
+	Without loss of generality we assume that the $y-axis$ is agreed upon as given by the OneAxis assumption.
+	Following the algorithm, robots first attempt to reach consensus on the direction of the x-axis. 
+	As shown earlier, this problem is not generally solvable for an even number of robots. In finite time, 
+	the robots either reach consensus on the x-axis or elect a leader. The algorithm proceeds as follows
+	\begin{enumerate}
+		\item Compute two vertical lines $l,r$ tangent to the convex hull of $\EE$, and the vertical line
+		at their midpoint $m$. 
+		\item Let $r$ refer to the line on the side with the majority of robots, and $l$ refer to the side
+		with a minority of robots.
+		\item If there is a side with a majority of the robots, then this side determines the orientation of
+		the x axis.
+		\item If there is no majority on either side of $m$, then with probability $\frac{1}{n}$ 
+		each robot moves to the center line $m$. 
+		\item After a finite number of steps, either the robots are all on the same vertical line $m$,
+		or they have decided a common direction for the $x$ axis.
+		\item If all the robots are on $m$, then we have solved the leader election problem, and 
+		can form the arbitrary pattern trivially.
+		\item If symmetry has been broken, then we can apply part of the \cite{flocchini12distrib}
+		algorithm to obtain the arbitrary pattern.
+	\end{enumerate}
+
+	The above algorithm describes the global actions each robot will take. We now give a more detailed view
+	of the algorithm from the viewpoint of the individual robots.
+
+	% algorithm
+	\begin{algorithm}
+	\begin{algorithmic}[1]
+	\Procedure{Puddle}{$\EE_i$, $\PP$}
+
+		% all robots have moved appropriately
+		\Switch{$i$.state}
+			\Case{START}
+				\State (status, dir) = topmostLR($\EE_i$, i)
+				\If{status and not onLRTangent(i)} % insert snippet to move onto line l/r
+					\State move to $l$ or $r$ whichever you have an unobstructed path to (if both move right)
+				\Else
+					\State dest = null
+				\EndIf
+				\If{ not $\exists$ robot $p$ not on $l$ or $r$}
+					\State state = UNBALANCE
+				\EndIf
+			\EndCase
+
+			\Case{UNBALANCE}
+				\If{ $\exists p \in \EE_i$ not on $l, r,$ or $m$ } \Comment another robot is moving
+					\State dest := null
+					\State return
+				\EndIf
+				\If{$|L| = |R|$}
+					\State getUnbalanaced()
+				\ElsIf{all robots on $m$}
+					\State state = ON-M
+					\State dest = null
+				\Else
+					\State state = FORMPATTERN
+					\State dest = null
+				\EndIf
+			\EndCase
+			\Case{FORMPATTERN}
+				\State lineup()
+				\State formPattern2()
+			\EndCase
+			\Case{ON-M}
+				\State formPattern()
+			\EndCase
+			\Case{DONE}
+				\State // do nothing the algorithm has finished
+			\EndCase
+		\EndSwitch
+
+	\EndProcedure
+	\end{algorithmic}
+	\end{algorithm}
+	
+	
+
+		
+
+
+	
+
+
+
+% goals for this section
+% describe section
+% give high level desc of result
+% give detailed desc with algorithm etc
+%
+% insert descriptions of graphics needed (if any)
+% flesh out algorithm in sufficient detail
+% add stuff to appendix if necessary
+% follow similar style as previous papers
+% conclude with 
 
 % Siva insert writing here!!!
 \subsection{SEC stuff } 
@@ -151,7 +269,147 @@ fat robots, abstract pattern formation, mobile robots
 
 %% \section{}
 %% \label{}
+\appendix
+\section{topmostLR()} 
 
+% TODO define robots not on $l, r$: 
+% We refer to robots that aren't on the $l$ or $r$ to be unaligned
+Let $y_max$ be the largest y-coordinate of any unaligned robot. 
+This method returns true if robot $i$ is the topmost unaligned robot by $y$ coordinate. In the
+case of ties, the method returns true only if $i$ is the left-most or right-most 
+robot on the horizontal line through $y_{max}$.
+
+\begin{algorithm}
+\begin{algorithmic}
+\Procedure{topmostLR}{$\EE_i$, $i$}
+	\State $E'_i = \{ (x_j, y_j) \in E_i : \text{ robot j isn't on line } r \text{ or } l\}$
+	\State $y_{max} = \max_{(x_j, y_j) \in E'_i}{y_j}$ 
+	\State $x_{max} = \max_{(x_j, y_j) \in E'_i : y_j = y_{max} }{x_j}$ 
+	\State $x_{min} = \min_{(x_j, y_j) \in E'_i : y_j = y_{max} }{x_j}$ 
+
+	\If{ $(x_i, y_i) == (x_{max}, y_{max})$ }
+		\State return $(True, right)$
+	\ElsIf{ $(x_i, y_i) == (x_{max}, y_{max})$ }
+		\State return $(True, left)$
+	\Else
+		\State return $(False, null)$
+	\EndIf
+
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\section{isAligned()} 
+
+This method computes the convex hull vertical tangent lines $l$ and $r$ according
+to the local view of robot $i$. We return true if $i$ is on one of the 
+computed tangents.
+\begin{algorithm}
+\begin{algorithmic}[1]
+\Procedure{isAligned}{$\EE_i$}
+	\State compute $l,r$ from local view $\EE_i$
+	\If $(x_i, y_i) \notin  l$ and $(x_i, y_i) \notin r$
+		\State return False
+	\Else 
+		\State return True
+	\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\section{getUnbalanced()} 
+Here we apply randomness to have a robot move from either $l$ or $r$ to $m$.
+This helper module gives our algorithm the additional power necessary to 
+solve APF in the even case.
+\begin{algorithm}
+\begin{algorithmic}[1]
+\Procedure{getUnbalanced}{$\EE_i$}
+	\State compute $m$ from local view
+	\State compute $b$ from local view of $m$ and $t$
+	\State with probability $\frac{1}{b}$ move horizontally to line $m$. 
+
+	% TODO: be precise about how robots align selves on $m$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\section{lineup()} 
+	\begin{algorithm}
+	\begin{algorithmic}[1]
+	\Procedure{lineup}{$\EE_i$, $\PP$}
+		\State Let $top^l$ and $top^r$, refer to the top robots on $l$ and $r$.
+		\If{$i$ is $top^l$ or $top^r$} 
+			\State then move $i$ vertically until
+			$top^l$ and $top^r$ have the same relative angle as in $\PP$.
+		\EndIf
+
+		\If{$i$ is not $top^l$ or $top^r$}
+			\State wait until $top^l$ or $top^r$ have moved to a fixed position. Now
+			from top to bottom along $l$ and $r$, each robot moves to occupy the 
+			``highest'' available position in pattern $\PP$ that isn't occupied.
+		\EndIf
+	\EndProcedure
+	\end{algorithmic}
+	\end{algorithm}
+\section{formPattern()} 
+This method is called to finish forming the pattern in the case where
+a common $x$ axis is determined.
+\begin{algorithm}
+\begin{algorithmic}[1]
+\Procedure{formPattern}{$\EE_i$, $\PP$, dir}
+	\Switch{state}
+		\Case{LEFT}
+			
+		\EndCase
+	\EndSwitch
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\section{leaderPattern()} 
+This method is called to form a pattern when all robots are on $m$.
+\begin{algorithm}
+\begin{algorithmic}[1]
+\Procedure{leaderPattern()}{$\EE_i, \PP$}
+	\If{$i$ is the bottom-most robot on $m$}
+		\State move down two units
+	\EndIf
+	\State let $j$ be the robot immediately below $i$ on $m$.
+	\State compute point $p$ on $m$ such that $j$ is one
+	unit below $i$ on $m$.
+	\State move to $p$.
+
+	% how ensure we're done moving??
+	% once done move one unit L or R, first bot decides direction
+	\While{ $\exists$ robot $p$ still moving along $m$ }
+		\State wait
+	\EndWhile
+
+	\If{$i$ is the top-most robot}
+		\State compute point $p$, right $(n-1)$ units from $i$'s current location
+		\State dest = p
+	\Else
+		dest = null
+	\EndIf
+
+	\While{ top-most robot is still moving }
+		\State wait
+	\EndWhile
+
+	\State Use distance to top-most robot to compute position $p$ that you
+	should assume in the final configuration.
+
+	\While{ $\exists$ robot $j$ above you on $m$}
+		\State wait
+	\EndWhile
+	\State dest = $p$
+	\State state = DONE
+
+
+	% TODO: setup an artifical ordering notation on the points in the shape!!
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
 %% If you have bibdatabase file and want bibtex to generate the
 %% bibitems, please use
 %%
