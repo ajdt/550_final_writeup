@@ -188,16 +188,20 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 	of the algorithm from the viewpoint of the individual robots.
 
 	% algorithm
-	\begin{algorithm}
+	\begin{algorithm}[H]
 	\begin{algorithmic}[1]
 	\Procedure{Puddle}{$\EE_i$, $\PP$}
 
 		% all robots have moved appropriately
 		\Switch{$i$.state}
 			\Case{START}
-				\State (status, dir) = topmostLR($\EE_i$, i)
-				\If{status and not onLRTangent(i)} % insert snippet to move onto line l/r
-					\State move to $l$ or $r$ whichever you have an unobstructed path to (if both move right)
+				\If{ not isAligned($\EE_i$)} % insert snippet to move onto line l/r
+					\State (status, dir) = topmostLR($\EE_i$, i)
+					\If{status}
+						\State let $h_i$ be the horizontal line through $y_i$
+						\State move in direction $dir$ along $h_i$ until you are on $l$ or $r$
+						% TODO avoid collisions here
+					\EndIf
 				\Else
 					\State dest = null
 				\EndIf
@@ -206,6 +210,7 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 				\EndIf
 			\EndCase
 
+			\State
 			\Case{UNBALANCE}
 				\If{ $\exists p \in \EE_i$ not on $l, r,$ or $m$ } \Comment another robot is moving
 					\State dest := null
@@ -221,13 +226,46 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 					\State dest = null
 				\EndIf
 			\EndCase
+
+			\Case{MOVE\_TO\_M}
+				\Comment robot is moving to $m$
+					\State let $l'$ be the line from which $i$ originated (either $l$ or $r$), and $L'$ the corresp. side
+					\While{ $\exists$ some robot $k$, also on side $L'$ with $y_k < y_i$ }
+						\State Wait until robot $k$ is on $m$.
+					\EndWhile
+
+					\State Move downward vertically until finding a point $p = (x_p, y_p)$ on $m$ such that 
+						moving to $p$ won't block the line of sight of any robot on $l$ or $r$.
+					\If{ $\exists$ robot $k$, also moving toward $p$}
+						\State with $\frac{1}{2}$ probability keep moving downward
+					\EndIf
+						\State dest = $p$
+						\State $i$.state = UNBALANCE
+			\EndCase
+			\State
+	\EndProcedure
+	\end{algorithmic}
+	\end{algorithm}
+
+	\clearpage % avoid having our algorithm moved to the end
+
+	\begin{algorithm}[H]
+	\begin{algorithmic}
+	\Procedure{PUDDLE}{args}
+		\caption{puddle continued}
+
+			\State
 			\Case{FORMPATTERN}
 				\State lineup()
-				\State formPattern2()
-			\EndCase
-			\Case{ON-M}
 				\State formPattern()
 			\EndCase
+
+			\State
+			\Case{ON-M}
+				\State leaderPattern()
+			\EndCase
+
+			\State
 			\Case{DONE}
 				\State // do nothing the algorithm has finished
 			\EndCase
@@ -299,12 +337,14 @@ robot on the horizontal line through $y_{max}$.
 \end{algorithmic}
 \end{algorithm}
 
+\clearpage % avoid having our algorithm moved to the end
+
 \section{isAligned()} 
 
 This method computes the convex hull vertical tangent lines $l$ and $r$ according
 to the local view of robot $i$. We return true if $i$ is on one of the 
 computed tangents.
-\begin{algorithm}
+\begin{algorithm}[H]
 \begin{algorithmic}[1]
 \Procedure{isAligned}{$\EE_i$}
 	\State compute $l,r$ from local view $\EE_i$
@@ -321,32 +361,76 @@ computed tangents.
 Here we apply randomness to have a robot move from either $l$ or $r$ to $m$.
 This helper module gives our algorithm the additional power necessary to 
 solve APF in the even case.
-\begin{algorithm}
+\begin{algorithm}[H]
 \begin{algorithmic}[1]
 \Procedure{getUnbalanced}{$\EE_i$}
+	\If{ $i$ is on $m$ already}
+		\State dest = null
+		\State return
+	\EndIf
 	\State compute $m$ from local view
 	\State compute $b$ from local view of $m$ and $t$
-	\State with probability $\frac{1}{b}$ move horizontally to line $m$. 
+	\State move = True with probability $\frac{1}{b}$ \Comment move horizontally to line $m$. 
+	\If{ move}
+		\State state = MOVE\_TO\_M
+		% TODO: notion of doppleganger or something for bot directly across from you
+		\State let $l'$ refer to the vertical tangent (either $l'$ or $r'$) that $i$ is on
+		\State compute rank = numeric ordering of $i$ counting from top to bottom on $i$
+		\State let $h_i$ be the horizontal line through $y_i$. 
+		\State compute point $p$ which is $rank$ units toward $m$ on line $h_i$.
+		\State dest = $p$
+	\EndIf
+
 
 	% TODO: be precise about how robots align selves on $m$
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
 
+\section{avoidCollision} 
+
 \section{lineup()} 
-	\begin{algorithm}
+	\begin{algorithm}[H]
 	\begin{algorithmic}[1]
 	\Procedure{lineup}{$\EE_i$, $\PP$}
-		\State Let $top^l$ and $top^r$, refer to the top robots on $l$ and $r$.
-		\If{$i$ is $top^l$ or $top^r$} 
-			\State then move $i$ vertically until
-			$top^l$ and $top^r$ have the same relative angle as in $\PP$.
+		
+		\Comment ensure that top-most guys line up
+		\State Let $t_l$ and $t_r$ refer to the top-most robots on $l$ and $r$
+		\If{ $i$ is  $t_l$ and $y_{t_l} > y_{t_r}$}
+			\State set dest = $(x_i, y_{t_r})$
+		\ElsIf{ $i$ is  $t_r$ and $y_{t_r} > y_{t_l}$}
+			\State set dest = $(x_i, y_{t_l})$
+		\Else 
+			\State dest = null
 		\EndIf
 
-		\If{$i$ is not $top^l$ or $top^r$}
-			\State wait until $top^l$ or $top^r$ have moved to a fixed position. Now
-			from top to bottom along $l$ and $r$, each robot moves to occupy the 
-			``highest'' available position in pattern $\PP$ that isn't occupied.
+		\State uniformSpacing()
+	\EndProcedure
+	\end{algorithmic}
+	\end{algorithm}
+
+\section{formPattern()} 
+	\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+	\Procedure{formPattern}{$\EE_i$, $\PP$}
+
+		\If{$i$ is top-most robot on $l$} % distinguish between $l$ after x-axis consensus and global $x$ explain
+			\State let $h$ = height of target pattern $\PP$.
+			\State dest = $(x_i + 1, y_i + h)$
+		\EndIf
+		\While{ top robot on $l$ is not at $(x_i + 1, y_i + h)$}
+			Wait
+		\EndWhile
+
+		\State Use distance to top-most robot in other vertical line to compute your 
+		ordering number $n_i$
+		\State dest = $N(\PP)[n_i]$
+		\While{there is a robot above you}
+			Wait
+		\EndWhile
+		\State move to dest
+		state = DONE
+
 		\EndIf
 	\EndProcedure
 	\end{algorithmic}
@@ -354,7 +438,7 @@ solve APF in the even case.
 \section{formPattern()} 
 This method is called to finish forming the pattern in the case where
 a common $x$ axis is determined.
-\begin{algorithm}
+\begin{algorithm}[H]
 \begin{algorithmic}[1]
 \Procedure{formPattern}{$\EE_i$, $\PP$, dir}
 	\Switch{state}
@@ -366,17 +450,18 @@ a common $x$ axis is determined.
 \end{algorithmic}
 \end{algorithm}
 
-\section{leaderPattern()} 
-This method is called to form a pattern when all robots are on $m$.
+\section{uniformSpacing()} 
+This is a utility algorithm that establishes a uniform spacing between all robots on
+the same vertical line.
 \begin{algorithm}
 \begin{algorithmic}[1]
-\Procedure{leaderPattern()}{$\EE_i, \PP$}
-	\If{$i$ is the bottom-most robot on $m$}
-		\State move down two units
+\Procedure{uniformSpacing}{$\EE_i$}
+	\If{$i$ is the top-most robot on $m$}
+		\State move up two units
 	\EndIf
-	\State let $j$ be the robot immediately below $i$ on $m$.
+	\State let $j$ be the robot immediately above $i$ on $m$.
 	\State compute point $p$ on $m$ such that $j$ is one
-	unit below $i$ on $m$.
+	unit above $i$ on $m$.
 	\State move to $p$.
 
 	% how ensure we're done moving??
@@ -384,7 +469,17 @@ This method is called to form a pattern when all robots are on $m$.
 	\While{ $\exists$ robot $p$ still moving along $m$ }
 		\State wait
 	\EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
 
+\section{leaderPattern()} 
+This method is called to form a pattern when all robots are on $m$.
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
+\Procedure{leaderPattern()}{$\EE_i, \PP$}
+
+	uniformSpacing($\EE_i$) % TODO: add state, so we know we've done this once
 	\If{$i$ is the top-most robot}
 		\State compute point $p$, right $(n-1)$ units from $i$'s current location
 		\State dest = p
