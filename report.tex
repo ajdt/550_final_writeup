@@ -205,8 +205,11 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 					\State (status, dir) = topmostLR($\EE_i$, i)
 					\If{status}
 						\State let $h_i$ be the horizontal line through $y_i$
+						\State let $l'$ be the vertical axis either $l$ or $r$ in the direction of dir
+						\If{ if the point at the intersection of $h_i$ and $l'$ cannot be occupied}
+							\State move one unit in the positive $y$ direction.
+						\EndIf
 						\State move in direction $dir$ along $h_i$ until you are on $l$ or $r$
-						% TODO avoid collisions here
 					\EndIf
 				\Else
 					\State dest = null
@@ -321,10 +324,55 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 		consensus are necessary before the robots are both able to enter $m$. Thus, in the worst case we must deal with
 		$O(n)$ conflicts in a single iteration of the unbalance procedure. These conflicts can be resolved in 
 		constant time so at worst $O(n)$ work is required per iteration. Since a constant number of iterations are 
-		required, we've shown the second stage of the algorithm to run in a linear number of steps.
+		required, we've shown the second stage of the algorithm to run in a linear number of steps. \\
 
 		The final stage of PUDDLE is running either the formPattern() or the leaderPattern() routines depending on
-		whether consensus on an  x-axis is reached or all robots end up on line $m$.
+		whether consensus on an x-axis is reached or all robots end up on line $m$. In both cases we first run the 
+		uniformSpacing() procedure to ensure that the distance between robots on the same vertical axis is uniform.
+		This procedure takes $O(n)$ steps since each robot moves only after one of it's neighbors has, and in 
+		the worst case, the robots move one at a time. formPattern() then has each robot compute its relative
+		distance to the top-most robot to establish a total ordering of the robots. This step
+		, done by each robot, requires $O(n)$ computations. The total ordering is then used to assign a
+		unique point each robot must assume in the target pattern $\PP$, and the robots move to these 
+		assigned points serially requiring $O(n)$ steps to do this. The leaderPattern() function behaves almost
+		identically, except for an additional step, where we require the leader to move $n-1$ units along the
+		$x$ axis to help establish a total ordering. \\
+
+		All of the steps described tell us that our algorithm will run in a number of steps linear in the 
+		number of robots.  
+
+		% TODO: mention that both size and orientation are preserved unlike previous algorithm
+
+		\subsection{PUDDLE is collision free} 
+		As in the previous section, we consider the algorithm in three separate parts. During the START phase
+		we can be assured that arranging the $n$ robots on $l$ and $r$ will be collision-free because only the
+		robot with the largest $y$-coordinate (called $y_{max}$) will move. In the case of ties, only the two robots
+		on the horizontal line through $y_{max}$ with the smallest and largest $x$-coordinates will move, and toward
+		vertical line $l'$ as given by the algorithm to prevent collisions. 
+		If a position on $l'$ is already occupied, a robot $i$
+		moves in the positive $y$ direction. Since, $i$ was already the top-most robot not on $l$ or $r$, no collision
+		can occur in this move.
+
+		In the unbalance stage of the algorithm, we note that all robots on a given side $L'$ move vertically at a point 
+		that is a unique distance from $l'$. Furthermore only the robot with the smallest $y$ coordinate
+		moves to enter the middle line $m$. Thus, collisions cannot occur between robots of on the same side $L'$.
+		To avoid collisions between a robot moving from $l$ and another moving from $r$ into line $m$, we ensure each
+		robot $i$ only enter $m$ on point $p_i$ if there is no other robot $j$ moving toward a point $p_j$ on $m$
+		that is within unit distance of $p_i$. If there is such a robot, $i$ stops, and only moves toward $p_i$ if
+		robot $j$ has moved vertically, away from point $p_j$, or if $i$ decides to move vertically to find a 
+		different entry point into $m$. Hence, collisions between robots from $l$ and $r$ are avoided as well.
+
+		In the formPattern() and leaderPattern() stages, we avoid collisions by having only a single robot move to
+		it's target position in pattern $\PP$ at any given time. The points in $\PP$ are sequenced by 
+		decreasing $y$ coordinate, and decreasing $x$ coordinate. Thus, when robot $i$ moves to point $\PP_i$ in 
+		the final configuration, none of the robots already in the configuration will get in the way of $i$.
+
+		% TODO: move robots back from m to $l$ or $r$
+
+		\subsection{additional properties of algorithm} 
+		Our algorithm also observes some additional properties that the original algorithm by Flocchini did not.
+		Firstly, our algorithm not only produces the given input pattern without rotation, but unlike \cite{flocchini12distrib},
+		the original pattern's dimensions are preserved. There is no rescaling.
 
 
 
