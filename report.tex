@@ -158,34 +158,40 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 
 	The result implies that in the a deterministic setting, OneAxis is not a strong enough 
 	assumption to solve the APF problem for an even number of robots. Rather than making 
-	stronger assumptions about prior consensus, our result applies randomness to the same setting
-	as \cite{flocchini12distrib}. We show that this is a strong enough assumption to solve the 
+	stronger assumptions about a priori consensus, our result applies randomness to the same setting. 
+	We show that this is a strong enough assumption to solve the 
 	APF problem with OneAxis in ASYNC. 
 
-	The algorithm we develop proceeds from an initial configuration $\EE$ to produce an input pattern $P$.
+	The algorithm we develop proceeds from an initial configuration $\EE$ to produce an input pattern $\PP$.
 	Without loss of generality we assume that the $y-axis$ is agreed upon as given by the OneAxis assumption.
 	Following the algorithm, robots first attempt to reach consensus on the direction of the x-axis. 
 	As shown earlier, this problem is not generally solvable for an even number of robots. In finite time, 
 	the robots either reach consensus on the x-axis or elect a leader. The algorithm proceeds as follows
 	\begin{enumerate}
 		\item Compute two vertical lines $l,r$ tangent to the convex hull of $\EE$, and the vertical line
-		at their midpoint $m$. 
+		at their midpoint $m$. We refer to $L$ as the region on the same side of $l$ with respect to 
+		the line $m$, and refer to $R$ similarly .
 		\item Let $r$ refer to the line on the side with the majority of robots, and $l$ refer to the side
 		with a minority of robots.
-		\item If there is a side with a majority of the robots, then this side determines the orientation of
+		\item If there is a side with a majority of the robots, then we refer to the configuration as
+		\textit{unbalanced}, and the side with majority determines the x-axis direction.
 		the x axis.
-		\item If there is no majority on either side of $m$, then with probability $\frac{1}{n}$ 
-		each robot moves to the center line $m$. 
+		\item If there is no majority on either side of $m$ (a \textit{balanced } configuration), 
+		then with some probability each robot moves to the center line $m$. 
 		\item After a finite number of steps, either the robots are all on the same vertical line $m$,
 		or they have decided a common direction for the $x$ axis.
 		\item If all the robots are on $m$, then we have solved the leader election problem, and 
 		can form the arbitrary pattern trivially.
-		\item If symmetry has been broken, then we can apply part of the \cite{flocchini12distrib}
-		algorithm to obtain the arbitrary pattern.
+		\item If the configuration is unbalanced, then we apply a different algorithm to order each
+		of the robots and form the arbitrary pattern.
 	\end{enumerate}
 
-	The above algorithm describes the global actions each robot will take. We now give a more detailed view
-	of the algorithm from the viewpoint of the individual robots.
+	We note that \cite{flocchini12distrib} provides an algorithm for APF from an unbalanced configuration.
+	Since this algorithm assumes a point-based model, we present our own algorithm for this stage of
+	the problem. The above algorithm describes the global actions each robot will take. 
+	We now give a more detailed view of the algorithm from the viewpoint of the individual robots.
+	Due to the length of the algorithm, we present it in sections, and have encapsulated related 
+	operations as sub-functions which can be found in the appendix.
 
 	% algorithm
 	\begin{algorithm}[H]
@@ -236,9 +242,9 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 
 					\State Move downward vertically until finding a point $p = (x_p, y_p)$ on $m$ such that 
 						moving to $p$ won't block the line of sight of any robot on $l$ or $r$.
-					\If{ $\exists$ robot $k$, also moving toward $p$}
+					\While{ $\exists$ robot $k$, also moving toward $p$}
 						\State with $\frac{1}{2}$ probability keep moving downward
-					\EndIf
+					\EndWhile
 						\State dest = $p$
 						\State $i$.state = UNBALANCE
 			\EndCase
@@ -275,7 +281,53 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 	\end{algorithmic}
 	\end{algorithm}
 	
-	
+	We must now prove that the algorithm above is both collision free and coverges to a solution
+	that correctly solves APF.
+	\subsection{PUDDLE runs in linear time} 
+		We break up our analysis into three parts, each of which will be in linear time. The algorithm
+		begins in the START state, which arranges all robots on a the vertical tangents to the convex
+		hull $l$ and $r$. Each robot $i$ moves according to the topmost() function in the appendix, which requires
+		that robot $i$ be the topmost robot according to $y$ coordinate. Consequently, in the worst case 
+		the robots move one	at a time onto lines $l$ and $r$. Thus, $O(n)$ move steps are required to 
+		complete this stage of the algorithm; where $n$ is the number of robots.
+		% TODO ensure the robots initially on $l$ and $r$ move downward for the above to work
+
+		Now we examine the unbalance procedure. Fix an arbitrary iteration of the unbalance procedure with,
+		there are exactly $\frac{k}{2}$ robots on $l$ and on $r$ each, and $n - k$ robots on line $m$. 
+		Thus, for any robot $i$ on $l$ or $r$ the probability that robot $i$ moves is 
+		$Pr(i \text{ moves }) = \frac{1}{k}$. The unbalance procedure will fail to create an unbalanced configuration
+		only if no robots move to $m$ on this iteration or the same number of robots from each side move
+		in this iteration. % define notion of an iteration more precisely
+		The probability that no robots move is given by $(1 - \frac{1}{k})^{k} \leq \frac{1}{e}$. 
+		The probability that $i$ robots from a single side move to $m$ in the same iteration is given 
+		by the binomial distribution: $(\frac{1}{k})^i (\frac{k-1}{k})^{k-i} {k\choose i}$.
+		The probability that the same number of robots move from each side in an iteration is given 
+		by a sum of squares over the binomial distribution:
+		$$\sum_{i=1}^{k}{((\frac{1}{k})^i (\frac{k-1}{k})^{k-i} {k\choose i})^2} \label{eq1}$$
+
+		\ref{eq1} is equal to $(\frac{k-1}{k})^{2k} ) \cdot ( F_1(-k, -k ; 1 ; \frac{1}{(k-1)^2} - 1) \leq .20 \text{ for } 
+		k \geq 6$. Since, $\frac{1}{e} \leq .37$, the total probability of failure is $\leq .57$. Considering, a complete
+		iteration as a Bernoulli process with success probability $p = 0.43$, the expected number of iterations until 
+		an unbalanced configuration is reached is $\frac{1}{p} \approx 2.32$. Thus, we expect a constant number of iterations
+		as $n$ grows asymptotically. To bound the amount of work done in a single iteration, we consider the worst case
+		where all robots on both $l$ and $r$ decide to move, and must reach consensus on placement in line $m$. 
+		The relevant code is in the MOVE\_TO\_M case of the PUDDLE algorithm. On each side, the algorithm requires that only 
+		one robot be moving vertically to locate a position on line $m$. Consensus, reduces to the case where a robot
+		from $q_l$ and a robot from $q_r$ from $l$ and $r$ respectively both attempt to enter 
+		points $p_l$ and $p_r$ on $m$ that are within unit distance. At this point, we again use randomness
+		to break ties. Ideally, we would like one of $q_r$ or $q_l$ to continue looking for the next available point,
+		and the other to take its intended point. This happens with probability $\frac{1}{2}$. Otherwise, the robots 
+		continue to block each other from entering $m$. It's easy to see that in expectation two attempts to reach
+		consensus are necessary before the robots are both able to enter $m$. Thus, in the worst case we must deal with
+		$O(n)$ conflicts in a single iteration of the unbalance procedure. These conflicts can be resolved in 
+		constant time so at worst $O(n)$ work is required per iteration. Since a constant number of iterations are 
+		required, we've shown the second stage of the algorithm to run in a linear number of steps.
+
+		The final stage of PUDDLE is running either the formPattern() or the leaderPattern() routines depending on
+		whether consensus on an  x-axis is reached or all robots end up on line $m$.
+
+
+
 
 		
 
@@ -431,7 +483,6 @@ solve APF in the even case.
 		\State move to dest
 		state = DONE
 
-		\EndIf
 	\EndProcedure
 	\end{algorithmic}
 	\end{algorithm}
