@@ -197,6 +197,7 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 	\begin{algorithm}[H]
 	\begin{algorithmic}[1]
 	\Procedure{Puddle}{$\EE_i$, $\PP$}
+	\caption{PUDDLE part 1}
 
 		% all robots have moved appropriately
 		\Switch{$i$.state}
@@ -218,7 +219,15 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 					\State state = UNBALANCE
 				\EndIf
 			\EndCase
+	\EndProcedure
+	\end{algorithmic}
+	\end{algorithm}
 
+	\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+	\caption{PUDDLE part 2: unbalancing}
+	\Procedure{Puddle}{$\EE_i$, $\PP$}
+		
 			\State
 			\Case{UNBALANCE}
 				\If{ $\exists p \in \EE_i$ not on $l, r,$ or $m$ } \Comment another robot is moving
@@ -261,7 +270,7 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 	\begin{algorithm}[H]
 	\begin{algorithmic}
 	\Procedure{PUDDLE}{args}
-		\caption{puddle continued}
+		\caption{PUDDLE part 3: pattern formation}
 
 			\State
 			\Case{FORMPATTERN}
@@ -308,7 +317,7 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 		by a sum of squares over the binomial distribution:
 		$$\sum_{i=1}^{k}{((\frac{1}{k})^i (\frac{k-1}{k})^{k-i} {k\choose i})^2} \label{eq1}$$
 
-		\ref{eq1} is equal to $(\frac{k-1}{k})^{2k} ) \cdot ( F_1(-k, -k ; 1 ; \frac{1}{(k-1)^2} - 1) \leq .20 \text{ for } 
+		\ref{eq1} is equal to $((\frac{k-1}{k})^{2k} ) \cdot ( F_1(-k, -k ; 1 ; \frac{1}{(k-1)^2}) - 1) \leq .20 \text{ for } 
 		k \geq 6$. Since, $\frac{1}{e} \leq .37$, the total probability of failure is $\leq .57$. Considering, a complete
 		iteration as a Bernoulli process with success probability $p = 0.43$, the expected number of iterations until 
 		an unbalanced configuration is reached is $\frac{1}{p} \approx 2.32$. Thus, we expect a constant number of iterations
@@ -351,7 +360,7 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 		vertical line $l'$ as given by the algorithm to prevent collisions. 
 		If a position on $l'$ is already occupied, a robot $i$
 		moves in the positive $y$ direction. Since, $i$ was already the top-most robot not on $l$ or $r$, no collision
-		can occur in this move.
+		can occur in this move. \\
 
 		In the unbalance stage of the algorithm, we note that all robots on a given side $L'$ move vertically at a point 
 		that is a unique distance from $l'$. Furthermore only the robot with the smallest $y$ coordinate
@@ -360,12 +369,12 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 		robot $i$ only enter $m$ on point $p_i$ if there is no other robot $j$ moving toward a point $p_j$ on $m$
 		that is within unit distance of $p_i$. If there is such a robot, $i$ stops, and only moves toward $p_i$ if
 		robot $j$ has moved vertically, away from point $p_j$, or if $i$ decides to move vertically to find a 
-		different entry point into $m$. Hence, collisions between robots from $l$ and $r$ are avoided as well.
+		different entry point into $m$. Hence, collisions between robots from $l$ and $r$ are avoided as well. \\
 
 		In the formPattern() and leaderPattern() stages, we avoid collisions by having only a single robot move to
 		it's target position in pattern $\PP$ at any given time. The points in $\PP$ are sequenced by 
 		decreasing $y$ coordinate, and decreasing $x$ coordinate. Thus, when robot $i$ moves to point $\PP_i$ in 
-		the final configuration, none of the robots already in the configuration will get in the way of $i$.
+		the final configuration, none of the robots already in the configuration will get in the way of $i$. \\
 
 		% TODO: move robots back from m to $l$ or $r$
 
@@ -408,7 +417,8 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 %% \section{}
 %% \label{}
 \appendix
-\section{topmostLR()} 
+\section{Helper Procedures for PUDDLE}
+\subsection{topmostLR()} 
 
 % TODO define robots not on $l, r$: 
 % We refer to robots that aren't on the $l$ or $r$ to be unaligned
@@ -417,8 +427,8 @@ This method returns true if robot $i$ is the topmost unaligned robot by $y$ coor
 case of ties, the method returns true only if $i$ is the left-most or right-most 
 robot on the horizontal line through $y_{max}$.
 
-\begin{algorithm}
-\begin{algorithmic}
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
 \Procedure{topmostLR}{$\EE_i$, $i$}
 	\State $E'_i = \{ (x_j, y_j) \in E_i : \text{ robot j isn't on line } r \text{ or } l\}$
 	\State $y_{max} = \max_{(x_j, y_j) \in E'_i}{y_j}$ 
@@ -437,9 +447,7 @@ robot on the horizontal line through $y_{max}$.
 \end{algorithmic}
 \end{algorithm}
 
-\clearpage % avoid having our algorithm moved to the end
-
-\section{isAligned()} 
+\subsection{isAligned()} 
 
 This method computes the convex hull vertical tangent lines $l$ and $r$ according
 to the local view of robot $i$. We return true if $i$ is on one of the 
@@ -457,7 +465,7 @@ computed tangents.
 \end{algorithmic}
 \end{algorithm}
 
-\section{getUnbalanced()} 
+\subsection{getUnbalanced()} 
 Here we apply randomness to have a robot move from either $l$ or $r$ to $m$.
 This helper module gives our algorithm the additional power necessary to 
 solve APF in the even case.
@@ -487,9 +495,9 @@ solve APF in the even case.
 \end{algorithmic}
 \end{algorithm}
 
-\section{avoidCollision} 
+%\subsection{avoidCollision} 
 
-\section{lineup()} 
+\subsection{lineup()} 
 	\begin{algorithm}[H]
 	\begin{algorithmic}[1]
 	\Procedure{lineup}{$\EE_i$, $\PP$}
@@ -509,7 +517,7 @@ solve APF in the even case.
 	\end{algorithmic}
 	\end{algorithm}
 
-\section{formPattern()} 
+\subsection{formPattern()} 
 	\begin{algorithm}[H]
 	\begin{algorithmic}[1]
 	\Procedure{formPattern}{$\EE_i$, $\PP$}
@@ -534,7 +542,7 @@ solve APF in the even case.
 	\EndProcedure
 	\end{algorithmic}
 	\end{algorithm}
-\section{formPattern()} 
+\subsection{formPattern()} 
 This method is called to finish forming the pattern in the case where
 a common $x$ axis is determined.
 \begin{algorithm}[H]
@@ -549,10 +557,10 @@ a common $x$ axis is determined.
 \end{algorithmic}
 \end{algorithm}
 
-\section{uniformSpacing()} 
+\subsection{uniformSpacing()} 
 This is a utility algorithm that establishes a uniform spacing between all robots on
 the same vertical line.
-\begin{algorithm}
+\begin{algorithm}[H]
 \begin{algorithmic}[1]
 \Procedure{uniformSpacing}{$\EE_i$}
 	\If{$i$ is the top-most robot on $m$}
@@ -572,7 +580,7 @@ the same vertical line.
 \end{algorithmic}
 \end{algorithm}
 
-\section{leaderPattern()} 
+\subsection{leaderPattern()} 
 This method is called to form a pattern when all robots are on $m$.
 \begin{algorithm}[H]
 \begin{algorithmic}[1]
