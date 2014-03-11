@@ -29,6 +29,18 @@
 		\item No explicit communication between robots
 	\end{itemize}
 
+	Related Problems:
+	\begin{itemize}
+	% todo: insert graphics to make these problems clear
+		\item gathering
+		\item pattern sequencing
+		\item flocking
+	\end{itemize}
+\end{frame}
+
+% insert slide for motivations
+
+\begin{frame}{Modelling Choices}
 	Various Modelling Choices:
 	\begin{itemize}
 		\item history oblivious, synchronous (FSYNC), ansynchronous (ASYNC)
@@ -38,62 +50,61 @@
 	Assumptions:
 	\begin{itemize}
 		\item compass orientations: 
-		<insert graphic here>
+		\begin{itemize}
+			\item consistent compass
+			\item OneAxis
+			\item Chirality
+		\end{itemize} 
+		\item rescaling and rotation of shape
+		\item number of robots
+		<insert graphics here to explain concepts>
 	\end{itemize}
-
-\end{frame}
-\begin{frame}{Our Model}
-	\begin{itemize}
-		\item unit disk, opaque, history oblivious, ASYNC
-	\end{itemize}
-
-
 \end{frame}
 
 \begin{frame}{Notation}
 	\begin{itemize}
-		\item We refer to a configuration, $\EE$, as an $n$-tuple of points: $\EE = (x_1,\ldots x_n)$, $\x_i \in \RR^2$
-		\item 
+		\item We refer to a configuration, $\EE$, as an $n$-tuple of points: $\EE = (x_1,\ldots x_n)$, $x_i \in \RR^2$
+		\item $\EE_i$ is configuration seen by robot $i$
+		\item $\PP$ target pattern robots must form
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{APF and Leader Election}
-	insert slide content	
+\begin{frame}{Prior Work: Impossibility Results}
+	\begin{theorem} 
+		APF is not solvable deterministically for an even number of robots $ n > 2$.
+	\end{theorem} 
+	INSERT GRAPHIC SHOWING WHY
+	\begin{theorem} 
+		APF is solvable deterministically for odd number of robots even in ASYNC.
+	\end{theorem} 
+	INSERT GRAPHIC SHOWING WHY
 \end{frame}
 
-\begin{frame}{Prior Work}
-	insert slide content	
+\begin{frame}{Prior Work: APF and Leader Election}
+	\begin{theorem} 
+		APF is solvable for $n \geq 3$ robots $\iff$ Leader election problem is solvable.
+	\end{theorem} 
+	APF $\rightarrow$ leader election:
+	\pause
+	INSERT GRAPHIC HERE
+
+	leader election $\rightarrow$ APF: 
+	\pause
+	INSERT GRAPHIC HERE
+
+	Using this insight, our algorithms work to solve leader election first.
+
 \end{frame}
 
 \begin{frame}{Our Results: Randomized APF}
-	insert slide content
+	Our Model:
+	\begin{itemize}
+		\item unit disk, opaque, history oblivious, ASYNC
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{PUDDLE: }
 	insert slide content
-\end{frame}
-
-\begin{frame}{A sample slide}
-
-%A displayed formula:
-
-%\[
-%  \int_{-\infty}^\infty e^{-x^2} \, dx = \sqrt{\pi}
-%\]
-
-An itemized list:
-
-\begin{itemize}
-  \item itemized item 1
-  \item itemized item 2
-  \item itemized item 3
-\end{itemize}
-
-\begin{theorem}
-  In a right triangle, the square of hypotenuse equals
-  the sum of squares of two other sides.
-\end{theorem}
-
 \end{frame}
 
 \end{document}
