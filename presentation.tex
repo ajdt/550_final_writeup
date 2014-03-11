@@ -5,7 +5,7 @@
 %
 
 \documentclass{beamer}
-\usetheme{default}
+\usetheme{Boadilla}
 \usepackage{shortcuts}
 \usepackage{tikz}
 
@@ -24,9 +24,10 @@
 	\titlepage	
 \end{frame}
 \begin{frame}
-	\tableofcontents
+	\tableofcontents[currentsection]
 \end{frame}
 
+\section{Introduction} 
 % justify why the problem is cool, applications!!
 \begin{frame}{Problem Introduction}
 	\textbf{Arbitrary Pattern Formation (APF):} 
@@ -77,6 +78,69 @@
 		\item $\PP$ target pattern robots must form
 		\item global view and local view definitions HERE!! % TODO
 	\end{itemize}
+\end{frame}
+
+\section{Prior Work} 
+\begin{frame}{Prior Work: Consistent Compass Trivializes APF}
+	Consistent Compass: All robots agree on the orientation of both axes. \\
+	\pause
+	\textit{Strategy: Total ordering of robots by $y$-coordinate, then $x$-coordinate.}
+	\textit{Robot 1 doesn't move. Rest move in order to assigned position.}
+	\pause
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+		\begin{figure}
+		\centering
+		\begin{tikzpicture}[scale=0.60]
+			\draw[help lines] (2,2) grid (7,7);
+
+			% circles on l
+			\draw [red, fill, ultra thick] (5,5) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (4,4) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (6,4) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (3,3) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (5,3) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (7,3) circle [radius=0.2];
+
+			% node labels
+			\node[left] at (5,5) {$1$} ;
+			\node[left] at (4,4) {$2$} ;
+			\node[left] at (6,4) {$3$} ;
+			\node[left] at (3,3) {$4$} ;
+			\node[left] at (5,3) {$5$} ;
+			\node[left] at (7,3) {$6$} ;
+
+		\end{tikzpicture}
+		\caption{Target Pattern}
+		\end{figure}
+		\end{column}
+
+		\begin{column}{0.5\textwidth}
+		\begin{figure}
+		\centering
+		\begin{tikzpicture}[scale=0.60]
+			\draw[help lines] (2,2) grid (7,7);
+
+			% circles 
+			\draw [red, fill, ultra thick] (2,5) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (3,4) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (6,2) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (2,3) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (5,6) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (7,2) circle [radius=0.2];
+
+			% node labels
+			\node[left] at (2,5) {$2$} ;
+			\node[left] at (3,4) {$3$} ;
+			\node[left] at (6,2) {$5$} ;
+			\node[left] at (2,3) {$4$} ;
+			\node[left] at (5,6) {$1$} ;
+			\node[left] at (7,2) {$6$} ;
+		\end{tikzpicture}
+			\caption{Ordering} \label{fig:hi}
+		\end{figure}
+		\end{column}
+	\end{columns}
 \end{frame}
 
 \begin{frame}{Prior Work: Impossibility Results}
@@ -221,6 +285,7 @@
 
 \end{frame}
 
+\section{Our Results} 
 % insert description of puddle
 % demonstrate how odd case works in previous algorithm???
 \begin{frame}{Our Work: PUDDLE, a Randomized Approach}
@@ -236,23 +301,275 @@
 	\end{enumerate}
 \end{frame}
 
-\begin{frame}{PUDDLE: PART 1}
+\begin{frame}{PUDDLE: Part 1}
 	\begin{enumerate}
-		\item Compute vertical lines $l,r$ tangent to the convex hull of $\EE$, 
+		\item Compute vertical lines $v_1,v_2$ tangent to the convex hull of $\EE$, 
 		\item Each robot $i$ moves to $l$ or $r$ which ever is ``right'' in local view.
+	\end{enumerate}
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+		\begin{figure}
+		\centering
+		\begin{tikzpicture}[scale=0.60]
+			\draw[help lines] (2,1) grid (8,7);
+
+			% circles 
+			\draw [red, fill, ultra thick] (4,5) circle [radius=0.5]; % eyes
+			\draw [red, fill, ultra thick] (6,5) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (2.9,3.2) circle [radius=0.5];% mouth
+			\draw [red, fill, ultra thick] (4,2.85) circle [radius=0.5]; 
+			\draw [red, fill, ultra thick] (6,2.85) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (7.1,3.2) circle [radius=0.5];
+			% node labels
+			%\node at (4,5) {$r_1$} ;
+			%\node at (6,5) {$r_2$} ;
+			%\node at (5,4) {$r_3$} ;
+			%\node at (2.9,3.2) {$r_4$} ;
+			%\node at (4,2.85) {$r_5$} ;
+			%\node at (5,2.35) {$r_6$} ;
+			%\node at (6,2.85) {$r_7$} ;
+			%\node at (7.1,3.2) {$r_8$} ;
+		\end{tikzpicture}
+		\caption{Target Pattern}
+		\end{figure}
+		\end{column}
+
+		\begin{column}{0.5\textwidth}
+		\begin{figure}
+		\centering
+		\begin{tikzpicture}[scale=0.50]
+			\draw[help lines] (0,0) grid (8,8);
+
+			% shade convex hull
+			\draw [teal, thick] (2,2) -- (6.4, 7) -- (7,1) -- (3,1) -- (2,2) ;
+			% circles 
+			\draw [red, fill, ultra thick] (2,2) circle [radius=0.5]; 
+			\draw [red, fill, ultra thick] (6,3) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (5,4) circle [radius=0.5]; 
+			\draw [red, fill, ultra thick] (6.4,7) circle [radius=0.5]; 
+			\draw [red, fill, ultra thick] (3,1) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (7,1) circle [radius=0.5];
+
+			% lines for $v_1$ and $v_2$
+			\draw [blue, dashed, thick, <->] (2,0) -- (2,8) ;
+			\draw [blue, dashed, thick, <->] (7,0) -- (7,8) ;
+			% labels for lines
+			\node[left] at (2,8) {$v_1$} ;
+			\node[right] at (7,8) {$v_2$} ;
+			% labels for robots
+			\node at (2,2) {$r_1$};
+			\node at (6,3) {$r_2$};
+			\node at (5,4) {$r_0$};
+			\node at (6.4,7) {$r_4$};
+			\node at (3,1) {$r_5$};
+			\node at (7,1) {$r_3$};
+
+		\end{tikzpicture}
+			\caption{Convex Hull} \label{fig:hi}
+		\end{figure}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+
+\begin{frame}{PUDDLE: Part 2}
+	\begin{enumerate}
 		% SHOW IN PICTURE: We refer to $L$ as the region on the same side of $l$ with respect to 
 		% 		the line $m$, and refer to $R$ similarly .
-		Let $r$ refer to the line on the side with the majority of robots, and $l$ refer to the side
+		\item Let $r$ refer to the line on the side with the majority of robots, and $l$ refer to the side
 		with a minority of robots.
 		\item If a side has majority of robots, this side determines the x-axis direction.
 		\item If  no majority on either side, compute center line $m$ 
 			with some probability $\frac{1}{n}$ each robot moves to the center line $m$. 
 	\end{enumerate}
-		\begin{tikzpicture}[scale=0.35]
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+		\begin{figure}
+		\centering
+		\begin{tikzpicture}[scale=0.40]
+			\draw[help lines] (0,0) grid (8,8);
+
+			\draw [<->] (1,0) -- (1,8) ;
+			\draw [<->] (5,0) -- (5,8) ;
+			% circles on l
+			\draw [red, fill, ultra thick] (1,1) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (1,3) circle [radius=0.5];
+
+			% circles on r
+			\draw [red, fill, ultra thick] (5,7) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (5,1) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (5,3) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (5,5) circle [radius=0.5];
+
+			% node labels
+			\node at (5,7) {$r_0$} ;
+			\node at (1,1) {$r_1$} ;
+			\node at (1,3) {$r_2$} ;
+			\node at (5,1) {$r_3$} ;
+			\node at (5,3) {$r_4$} ;
+			\node at (5,5) {$r_5$} ;
+
+			% line labels
+			\node[left] at (1,6) {$l$} ;
+			\node[right] at (5,6) {$r$} ;
+
+			% arrow for x axis
+			\draw [blue, thick,->] (1,5) -- (3,5) ;
+			\node[blue, right] at (3,5) {$x$};
+
+			
 		\end{tikzpicture}
+		\caption{already asymmetric}
+		\end{figure}
+		\end{column}
+
+		\begin{column}{0.5\textwidth}
+		\begin{figure}
+		\centering
+		\begin{tikzpicture}[scale=0.40]
+			\draw[help lines] (0,0) grid (8,8);
+
+			\draw [<->] (1,0) -- (1,8) ;
+			\draw [<->] (5,0) -- (5,8) ;
+			\draw [dashed, thick, blue,<->] (3,0) -- (3,8) ;
+			% circles on l
+			
+			\draw [red, fill, ultra thick] (1,5) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (1,1) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (1,3) circle [radius=0.5];
+
+			% circles on r
+			\draw [red, fill, ultra thick] (5,1) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (5,3) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (5,5) circle [radius=0.5];
+
+			% node labels
+			\node at (1,5) {$r_0$} ;
+			\node at (1,1) {$r_1$} ;
+			\node at (1,3) {$r_2$} ;
+			\node at (5,1) {$r_3$} ;
+			\node at (5,3) {$r_4$} ;
+			\node at (5,5) {$r_5$} ;
+
+			% line labels
+			\node[left] at (1,6) {$v_1$} ;
+			\node[right] at (5,6) {$v_2$} ;
+			\node[right] at (3,6) {$m$} ;
+
+			% r_0 moves 
+			\draw [blue, thick] (1,5) circle [radius=1];
+			%\draw [blue, thick,->, right] (1,5) -- (3,5) ;
+			%\node[right, blue] at (3,5) {$x$} ;
+
+			
+		\end{tikzpicture}
+			\caption{breaking symmetry} \label{fig:hi}
+		\end{figure}
+		\end{column}
+	\end{columns}
 \end{frame}
 
-\begin{frame}{PUDDLE: PART 2}
+% NOTE: duplicate slide to fake animation
+\begin{frame}{PUDDLE: Part 2}
+	\begin{enumerate}
+		% SHOW IN PICTURE: We refer to $L$ as the region on the same side of $l$ with respect to 
+		% 		the line $m$, and refer to $R$ similarly .
+		\item Let $r$ refer to the line on the side with the majority of robots, and $l$ refer to the side
+		with a minority of robots.
+		\item If a side has majority of robots, this side determines the x-axis direction.
+		\item If  no majority on either side, compute center line $m$ 
+			with some probability $\frac{1}{n}$ each robot moves to the center line $m$. 
+	\end{enumerate}
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+		\begin{figure}
+		\centering
+		\begin{tikzpicture}[scale=0.40]
+			\draw[help lines] (0,0) grid (8,8);
+
+			\draw [<->] (1,0) -- (1,8) ;
+			\draw [<->] (5,0) -- (5,8) ;
+			% circles on l
+			\draw [red, fill, ultra thick] (1,1) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (1,3) circle [radius=0.5];
+
+			% circles on r
+			\draw [red, fill, ultra thick] (5,7) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (5,1) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (5,3) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (5,5) circle [radius=0.5];
+
+			% node labels
+			\node at (5,7) {$r_0$} ;
+			\node at (1,1) {$r_1$} ;
+			\node at (1,3) {$r_2$} ;
+			\node at (5,1) {$r_3$} ;
+			\node at (5,3) {$r_4$} ;
+			\node at (5,5) {$r_5$} ;
+
+			% line labels
+			\node[left] at (1,6) {$l$} ;
+			\node[right] at (5,6) {$r$} ;
+
+			% arrow for x axis
+			\draw [blue, thick,->] (1,5) -- (3,5) ;
+			\node[blue, right] at (3,5) {$x$};
+
+			
+		\end{tikzpicture}
+		\caption{already asymmetric}
+		\end{figure}
+		\end{column}
+
+		\begin{column}{0.5\textwidth}
+		\begin{figure}
+		\centering
+		\begin{tikzpicture}[scale=0.40]
+			\draw[help lines] (0,0) grid (8,8);
+
+			\draw [<->] (1,0) -- (1,8) ;
+			\draw [<->] (5,0) -- (5,8) ;
+			\draw [dashed, thick, blue,<->] (3,0) -- (3,8) ;
+			% circles on l
+			
+			\draw [red, fill, ultra thick] (1,1) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (1,3) circle [radius=0.5];
+
+			% circle on m
+			\draw [red, fill, ultra thick] (3,5) circle [radius=0.5];
+
+			% circles on r
+			\draw [red, fill, ultra thick] (5,1) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (5,3) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (5,5) circle [radius=0.5];
+
+			% node labels
+			\node at (3,5) {$r_0$} ;
+			\node at (1,1) {$r_1$} ;
+			\node at (1,3) {$r_2$} ;
+			\node at (5,1) {$r_3$} ;
+			\node at (5,3) {$r_4$} ;
+			\node at (5,5) {$r_5$} ;
+
+			% line labels
+			\node[left] at (1,6) {$v_1$} ;
+			\node[right] at (5,6) {$v_2$} ;
+			\node[right] at (3,6) {$m$} ;
+
+			% r_0 moves 
+			\draw [blue, thick] (3,5) circle [radius=1];
+			\draw [blue, thick,->, right] (1,7) -- (3,7) ;
+			\node[right, blue] at (3,7) {$x$} ;
+
+			
+		\end{tikzpicture}
+			\caption{breaking symmetry} \label{fig:hi}
+		\end{figure}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{PUDDLE: Part 3}
 	\begin{enumerate}
 		\item In finite time, either all robots are on $m$,
 		or consensus reached on direction for $x$ axis.
@@ -261,13 +578,54 @@
 		\item If x-axis determined, then leader is top-robot on $l$, and form pattern first using
 		all bots in $l$, then $m$, and $r$.
 	\end{enumerate}
-	INSERT GRAPHICS FOR TWO CASES
+		
+		\begin{figure}
+		\begin{tikzpicture}[scale=0.40]
+			\draw[help lines] (0,0) grid (8,8);
+
+			\draw [<->] (1,0) -- (1,8) ;
+			\draw [<->] (5,0) -- (5,8) ;
+			\draw [dashed, thick, blue,<->] (3,0) -- (3,8) ;
+			% circles on l
+			
+			\draw [red, fill, ultra thick] (1,1) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (1,3) circle [radius=0.5];
+
+			% circle on m
+			\draw [red, fill, ultra thick] (3,5) circle [radius=0.5];
+
+			% circles on r
+			\draw [red, fill, ultra thick] (5,1) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (5,3) circle [radius=0.5];
+			\draw [red, fill, ultra thick] (5,5) circle [radius=0.5];
+
+			% node labels
+			\node at (3,5) {$3$} ;
+			\node at (1,1) {$2$} ;
+			\node at (1,3) {$1$} ;
+			\node at (5,1) {$6$} ;
+			\node at (5,3) {$5$} ;
+			\node at (5,5) {$4$} ;
+
+			% line labels
+			\node[left] at (1,6) {$v_1$} ;
+			\node[right] at (5,6) {$v_2$} ;
+			\node[right] at (3,6) {$m$} ;
+		\end{tikzpicture}
+		\caption{Ordering}
+		\end{figure}
 \end{frame}
 
 \begin{frame}{PUDDLE: Guarantees }
 	\begin{itemize}
-		\item x-axis consensus in 3 rounds (in expectation)
-		\item Works for Disk model
+		\item x-axis consensus  only fails if:
+			\begin{itemize}
+				\item No robots move $Pr = (1 - \frac{1}{k})^{k} \leq \frac{1}{e} \approx 0.37$
+				\item The same number of robots move from each side:
+					$$\sum_{i=1}^{k}{((\frac{1}{k})^i (\frac{k-1}{k})^{k-i} {k\choose i})^2} \leq 0.20$$
+			\end{itemize}
+		\item Probability of success is at least $0.43$. Consensus in 3 rounds (in expectation).
+		\item Algorithm works for Disk model
 		\item Guaranteed collision free (details in paper)
 	\end{itemize}
 \end{frame}
@@ -348,3 +706,8 @@ Questions?
 \end{figure}
 \end{frame}
 \end{document}
+
+%todo
+% citations
+% more gifs flocking, etc.
+% practice
