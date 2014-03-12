@@ -8,6 +8,8 @@
 \usetheme{Boadilla}
 \usepackage{shortcuts}
 \usepackage{tikz}
+\usepackage{verbatim}
+\usepackage{apacite} 
 
 \title[Abstract Pattern Formation]{A Randomized Approach to Abstract Pattern Formation Fat Robots}
 %\subtitle[Errors]{Estimation of numerical errors}
@@ -24,7 +26,7 @@
 	\titlepage	
 \end{frame}
 \begin{frame}
-	\tableofcontents[currentsection]
+	\tableofcontents
 \end{frame}
 
 \section{Introduction} 
@@ -38,12 +40,18 @@
 		\item No explicit communication between robots
 	\end{itemize}
 
-	Related Problems:
+	%Related Problems:
+	%\begin{itemize}
+	% todo: insert graphics to make these problems clear
+	%	\item gathering
+	%	\item pattern sequencing
+	%	\item flocking
+	%\end{itemize}
+	Applications:
 	\begin{itemize}
 	% todo: insert graphics to make these problems clear
-		\item gathering
-		\item pattern sequencing
-		\item flocking
+		\item Simpler generic robots that are composable and configurable vs special purpose monolithic robots
+		\item APF used to assign role to robots
 	\end{itemize}
 \end{frame}
 
@@ -52,39 +60,109 @@
 \begin{frame}{Modelling Choices}
 	Various Modelling Choices:
 	\begin{itemize}
-		\item history oblivious, synchronous (FSYNC), ansynchronous (ASYNC)
+		\item history oblivious, synchronous or ansynchronous 
 		\item point vs disk model, transparent vs opaque
-	\end{itemize}
+		\item compass orientation: 
+		\begin{columns}
+			\begin{column}{0.5\textwidth}
+			\begin{figure}[H]
+				\begin{tikzpicture}[scale=0.5]
+					\draw[help lines] (2,2) grid (6,6);
+					\draw [red, fill] (5,5) circle [radius=0.2];
+					\draw [red, fill] (3,4) circle [radius=0.2];
+					\draw [red, fill] (5,2) circle [radius=0.2];
+					% axes 
+					\draw [->] (5,5) -- (5,6) ;
+					\draw [->] (5,5) -- (6,5) ;
+					\draw [->] (3,4) -- (3,5) ;
+					\draw [->] (3,4) -- (4,4) ;
+					\draw [->] (5,2) -- (5,3) ;
+					\draw [->] (5,2) -- (6,2) ;
+					% lables
+					\node[above] at (5,6) {$y$} ;
+					\node[right] at (6,5) {$x$} ;
+					\node[above] at (3,5) {$y$} ;
+					\node[right] at (4,4) {$x$} ;
+					\node[above] at (5,3) {$y$} ;
+					\node[right] at (6,2) {$x$} ;
 
-	Assumptions:
-	\begin{itemize}
-		\item compass orientations: 
-		\begin{itemize}
-			\item consistent compass
-			\item OneAxis
-			\item Chirality
-		\end{itemize} 
-		\item rescaling and rotation of shape
-		\item number of robots
-		% TODO
-		<insert graphics here to explain concepts>
+				\end{tikzpicture}
+			\caption{consistent compass}
+			\end{figure}
+			\end{column}
+
+			\begin{column}{0.5\textwidth}
+			\begin{figure}[H]
+				\begin{tikzpicture}[scale=0.45]
+					\draw[help lines] (2,2) grid (6,6);
+					\draw [red, fill] (5,5) circle [radius=0.2];
+					\draw [red, fill] (3,4) circle [radius=0.2];
+					\draw [red, fill] (5,2) circle [radius=0.2];
+					% axes 
+					\draw [->] (5,5) -- (5,6) ;
+					\draw [->] (5,5) -- (6,5) ;
+					\draw [->] (3,4) -- (3,5) ;
+					\draw [blue, ultra thick, ->] (3,4) -- (2,4) ;
+					\draw [->] (5,2) -- (5,3) ;
+					\draw [->] (5,2) -- (6,2) ;
+					% lables
+					\node[above] at (5,6) {$y$} ;
+					\node[right] at (6,5) {$x$} ;
+					\node[above] at (3,5) {$y$} ;
+					\node[blue, left] at (2,4) {$x$} ;
+					\node[above] at (5,3) {$y$} ;
+					\node[right] at (6,2) {$x$} ;
+				\end{tikzpicture}
+			\caption{OneAxis}
+			\end{figure}
+			\end{column}
+			
+			% this section will be left out, due to time constraints
+			%\begin{column}{0.3\textwidth}
+			%\begin{figure}[H]
+			%	\begin{tikzpicture}[scale=0.45]
+			%		\draw[help lines] (2,2) grid (7,7);
+			%		\draw [red, fill] (5,5) circle [radius=0.2];
+			%		\draw [red, fill] (3,4) circle [radius=0.2];
+			%		\draw [red, fill] (5,2) circle [radius=0.2];
+			%		% axes 
+			%		\draw [->] (5,5) -- (4.5,6) ;
+			%		\draw [->] (5,5) -- (6,5.4) ;
+			%		\draw [->] (3,4) -- (3.2,5) ;
+			%		\draw [->] (3,4) -- (4,3.8) ;
+			%		\draw [->] (5,2) -- (5,3) ;
+			%		\draw [->] (5,2) -- (6,2) ;
+			%		% lables
+			%		\node[above] at (4.5,6) {$y$} ;
+			%		\node[right] at (6,5.4) {$x$} ;
+			%		\node[above] at (3.2,5) {$y$} ;
+			%		\node[above] at  (4,3.8) {$x$} ;
+			%		\node[above] at (5,3) {$y$} ;
+			%		\node[right] at (6,2) {$x$} ;
+			%	\end{tikzpicture}
+			%\caption{Chirality}
+			%\end{figure}
+			%\end{column}
+			
+		\end{columns} 
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Notation}
-	\begin{itemize}
-		\item We refer to a configuration, $\EE$, as an $n$-tuple of points: $\EE = (x_1,\ldots x_n)$, $x_i \in \RR^2$
-		\item $\EE_i$ is configuration seen by robot $i$
-		\item $\PP$ target pattern robots must form
-		\item global view and local view definitions HERE!! % TODO
-	\end{itemize}
-\end{frame}
+% won't be used in final presentation
+%\begin{frame}{Notation}
+%	\begin{itemize}
+%		\item We refer to a configuration, $\EE$, as an $n$-tuple of points: $\EE = (x_1,\ldots x_n)$, $x_i \in \RR^2$
+%		\item $\EE_i$ is configuration seen by robot $i$
+%		\item $\PP$ target pattern robots must form
+%		\item global view and local view definitions HERE!! % TODO
+%	\end{itemize}
+%\end{frame}
 
 \section{Prior Work} 
 \begin{frame}{Prior Work: Consistent Compass Trivializes APF}
 	Consistent Compass: All robots agree on the orientation of both axes. \\
 	\pause
-	\textit{Strategy: Total ordering of robots by $y$-coordinate, then $x$-coordinate.}
+	\textit{Strategy: Total ordering of robots by $y$-coordinate, then $x$-coordinate\cite{flocchini12distrib}.} \\
 	\textit{Robot 1 doesn't move. Rest move in order to assigned position.}
 	\pause
 	\begin{columns}
@@ -143,52 +221,12 @@
 	\end{columns}
 \end{frame}
 
-\begin{frame}{Prior Work: Impossibility Results}
+\begin{frame}{Prior Work: Good News}
 	\begin{theorem} 
-		APF is not solvable deterministically for an even number of robots $ n > 2$.
+		APF is solvable deterministically for odd number of robots with OneAxis even in ASYNC \cite{flocchini08arbitrary}.
 	\end{theorem} 
-	%\begin{float}[H]
-		\begin{tikzpicture}[scale=0.45]
-			\draw[help lines] (0,0) grid (6,6);
-
-			% circles
-			\draw [red, fill, ultra thick] (1,1) circle [radius=0.2];;
-			\draw [red, fill, ultra thick] (5,1) circle [radius=0.2];;
-			\draw [red, fill, ultra thick] (5,5) circle [radius=0.2];;
-			\draw [red, fill, ultra thick] (1,5) circle [radius=0.2];;
-
-			% axes
-			\draw[thick, ->] (1,1) -- (1,2) ; % robot 1
-			\draw[thick, ->] (1,1) -- (2,1) ; 
-			\node at (1,2) {$y$} ;
-			\node at (2,1) {$x$} ;
-			\draw[thick, ->] (5,1) -- (4,1) ; % robot 2
-			\draw[thick, ->] (5,1) -- (5,2) ; 
-			\node at (4,1) {$y$} ;
-			\node at (5,2) {$x$} ;
-			\draw[thick, ->] (5,5) -- (5,4) ; % robot 3
-			\draw[thick, ->] (5,5) -- (4,5) ; 
-			\node at (5,4) {$y$} ;
-			\node at (4,5) {$x$} ;
-			\draw[thick, ->] (1,5) -- (2,5) ; % robot 4
-			\draw[thick, ->] (1,5) -- (1,4) ; 
-			\node at (2,5) {$y$} ;
-			\node at (1,4) {$x$} ;
-
-			%\node[red, circle, minimum size=0.1cm] at (1,1) {$r_1$} ;
-			\node[below] at (1,1) {$r_1$} ;
-			\node[below] at (5,1) {$r_2$} ;
-			\node[above] at (5,5) {$r_3$} ;
-			\node[above] at (1,5) {$r_4$} ;
-
-			% draw circles at positions desired
-			%\draw [red, ultra thick] (0,0)
-			%\draw (1,1) -- (5,1) -- (5,5) -- (1,5) -- (1,1);
-		\end{tikzpicture}
-	%\end{float}
-	\begin{theorem} 
-		APF is solvable deterministically for odd number of robots even in ASYNC.
-	\end{theorem} 
+	\begin{columns}
+	\begin{column}{0.5\textwidth}
 		\begin{tikzpicture}[scale=0.35]
 			\draw[help lines] (0,0) grid (6,6);
 
@@ -208,18 +246,14 @@
 			\node[above] at (3,5) {$r_4$} ;
 			\node[above] at (4,5) {$r_5$} ;
 			% line labels
-			\node[left] at (1,6) {$l$} ;
-			\node[right] at (5,6) {$r$} ;
+			\node[left] at (1,6) {$v_1$} ;
+			\node[right] at (5,6) {$v_2$} ;
 		\end{tikzpicture}
-
-\end{frame}
-
-% todo: fit this on one slide!!
-\begin{frame}{prev result part 2}
+	\end{column}
+	\begin{column}{0.5\textwidth}
 		% APF solved
 		\begin{tikzpicture}[scale=0.35]
 			\draw[help lines] (0,0) grid (6,6);
-
 			\draw [<->] (1,0) -- (1,6) ;
 			\draw [<->] (5,0) -- (5,6) ;
 			% circles
@@ -228,20 +262,77 @@
 			\draw [red, fill, ultra thick] (5,1) circle [radius=0.2];
 			\draw [red, fill, ultra thick] (5,2) circle [radius=0.2];
 			\draw [red, fill, ultra thick] (5,5) circle [radius=0.2];
-			\draw [blue, ultra thick] (5,5) circle [radius=0.9]; % leader circle 
-
+			\draw [cyan, thick] (5,5) circle [radius=0.9]; % leader circle 
 			% node labels
 			\node[below] at (1,1) {$r_1$} ;
 			\node[below] at (1,3) {$r_2$} ;
-			\node[above] at (5,1) {$r_3$} ;
+			\node[right] at (5,1) {$r_3$} ;
 			\node[above] at (5,2) {$r_4$} ;
 			\node[above] at (5,5) {$r_5$} ;
-
 			% line labels
-			\node[left] at (1,6) {$l$} ;
-			\node[right] at (5,6) {$r$} ;
+			\node[left] at (1,6) {$v_1$} ;
+			\node[right] at (5,6) {$v_2$} ;
 		\end{tikzpicture}
+	\end{column}
+	\end{columns}
 \end{frame}
+
+\begin{frame}{Prior Work: Bad News}
+	\begin{theorem} 
+		APF is not solvable deterministically for an even number of robots $ n > 2$ with OneAxis \cite{flocchini12distrib}.
+	\end{theorem} 
+	\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}[H]
+		\begin{tikzpicture}[scale=0.45]
+			\draw[help lines] (0,0) grid (6,6);
+			% circles
+			\draw [red, fill, ultra thick] (3,1) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (3,3) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (3,4) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (3,5) circle [radius=0.2];
+			% node labels
+			\node[below] at (3,1) {$r_1$} ;
+			\node[below] at (3,3) {$r_2$} ;
+			\node[above] at (3,4) {$r_3$} ;
+			\node[above] at (3,5) {$r_4$} ;
+		\end{tikzpicture}
+		\caption{Target Pattern}
+		\end{figure}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		% bad case
+		\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[scale=0.45]
+			\draw[help lines] (0,0) grid (6,6);
+			% circles
+			\draw [red, fill, ultra thick] (2,1) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (2,5) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (5,1) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (5,5) circle [radius=0.2];
+			% node labels
+			\node[below] at (2,1) {$r_1$} ;
+			\node[below] at (2,5) {$r_2$} ;
+			\node[below] at (5,1) {$r_3$} ;
+			\node[below] at (5,5) {$r_4$} ;
+			% x axes
+			\draw [->] (2,1) -- (3, 1) ;
+			\draw [->] (2,5) -- (3, 5) ;
+			\draw [->] (5,1) -- (4, 1) ;
+			\draw [->] (5,5) -- (4, 5) ;
+			% axes labels
+			\node[above] at (3, 1) {$x$};
+			\node[above] at (3, 5) {$x$};
+			\node[above] at (4, 1) {$x$};
+			\node[above] at (4, 5) {$x$};
+		\end{tikzpicture}
+		\caption{Initial Config}
+		\end{figure}
+	\end{column}
+	\end{columns}
+\end{frame}
+
 
 \begin{frame}{Prior Work: APF and Leader Election}
 	\begin{theorem} 
@@ -291,12 +382,12 @@
 \begin{frame}{Our Work: PUDDLE, a Randomized Approach}
 	Our Model:
 	\begin{itemize}
-		\item unit disk, opaque, history oblivious, ASYNC
+		\item unit disks, opaque, history oblivious, ASYNC
 	\end{itemize}
 	3 stages:
 	\begin{enumerate}
-		\item Move robots to vertical lines $l,r$
-		\item If same number of robots on $l$ and on $r$, then break symmetry with randomness
+		\item Move robots to vertical lines $v_1,v_2$
+		\item If same number of robots on $v_1$ and on $v_2$, then break symmetry with randomness
 		\item Elect leader from current configuration and form $\PP$
 	\end{enumerate}
 \end{frame}
@@ -304,7 +395,7 @@
 \begin{frame}{PUDDLE: Part 1}
 	\begin{enumerate}
 		\item Compute vertical lines $v_1,v_2$ tangent to the convex hull of $\EE$, 
-		\item Each robot $i$ moves to $l$ or $r$ which ever is ``right'' in local view.
+		\item Each robot $i$ moves to $v_1$ or $v_2$ which ever is ``right'' in local view.
 	\end{enumerate}
 	\begin{columns}
 		\begin{column}{0.5\textwidth}
@@ -639,7 +730,44 @@ Idea: Find an initial configuration such that every robot's local view is the sa
 \pause
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=40mm]{square.JPG}
+		\begin{tikzpicture}[scale=0.45]
+			\draw[help lines] (0,0) grid (6,6);
+
+			% circles
+			\draw [red, fill, ultra thick] (1,1) circle [radius=0.2];;
+			\draw [red, fill, ultra thick] (5,1) circle [radius=0.2];;
+			\draw [red, fill, ultra thick] (5,5) circle [radius=0.2];;
+			\draw [red, fill, ultra thick] (1,5) circle [radius=0.2];;
+
+			% axes
+			\draw[thick, ->] (1,1) -- (1,2) ; % robot 1
+			\draw[thick, ->] (1,1) -- (2,1) ; 
+			\node at (1,2) {$y$} ;
+			\node at (2,1) {$x$} ;
+			\draw[thick, ->] (5,1) -- (4,1) ; % robot 2
+			\draw[thick, ->] (5,1) -- (5,2) ; 
+			\node at (4,1) {$y$} ;
+			\node at (5,2) {$x$} ;
+			\draw[thick, ->] (5,5) -- (5,4) ; % robot 3
+			\draw[thick, ->] (5,5) -- (4,5) ; 
+			\node at (5,4) {$y$} ;
+			\node at (4,5) {$x$} ;
+			\draw[thick, ->] (1,5) -- (2,5) ; % robot 4
+			\draw[thick, ->] (1,5) -- (1,4) ; 
+			\node at (2,5) {$y$} ;
+			\node at (1,4) {$x$} ;
+
+			%\node[red, circle, minimum size=0.1cm] at (1,1) {$r_1$} ;
+			\node[below] at (1,1) {$r_1$} ;
+			\node[below] at (5,1) {$r_2$} ;
+			\node[above] at (5,5) {$r_3$} ;
+			\node[above] at (1,5) {$r_4$} ;
+
+			% draw circles at positions desired
+			%\draw [red, ultra thick] (0,0)
+			%\draw (1,1) -- (5,1) -- (5,5) -- (1,5) -- (1,1);
+		\end{tikzpicture}
+	%\end{float}
 \end{figure}
 \end{frame}
 
@@ -705,9 +833,14 @@ Questions?
 \includegraphics[width=90mm]{qa_img.jpg}
 \end{figure}
 \end{frame}
+
+\begin{frame}{References}
+%\begin{frame}[allowframebreaks]{References}
+\bibliographystyle{apacite} 
+\bibliography{presentation}
+\end{frame}
+
 \end{document}
 
 %todo
-% citations
-% more gifs flocking, etc.
 % practice
