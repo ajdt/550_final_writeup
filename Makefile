@@ -10,4 +10,4 @@ slides: presentation.tex presentation.bib
 	pdflatex presentation.tex
 	pdflatex presentation.tex
 clean:
-	rm report.pdf systems_project.aux
+	rm *.pdf *.aux *.log *.bbl *.blg *.nav *.spl *.out *.snm

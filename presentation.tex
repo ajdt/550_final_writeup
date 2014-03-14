@@ -9,7 +9,7 @@
 \usepackage{shortcuts}
 \usepackage{tikz}
 \usepackage{verbatim}
-\usepackage{apacite} 
+\usepackage[numberedbib]{apacite} 
 
 \title[Abstract Pattern Formation]{A Randomized Approach to Abstract Pattern Formation Fat Robots}
 %\subtitle[Errors]{Estimation of numerical errors}
@@ -31,6 +31,7 @@
 
 \section{Introduction} 
 % justify why the problem is cool, applications!!
+\subsection{APF} 
 \begin{frame}{Problem Introduction}
 	\textbf{Arbitrary Pattern Formation (APF):} 
 	\begin{itemize}
@@ -57,7 +58,8 @@
 
 % insert slide for motivations
 
-\begin{frame}{Modelling Choices}
+\subsection{Robot Models} 
+\begin{frame}{Robot Models}
 	Various Modelling Choices:
 	\begin{itemize}
 		\item history oblivious, synchronous or ansynchronous 
@@ -159,6 +161,7 @@
 %\end{frame}
 
 \section{Prior Work} 
+\subsection{Consistent Compass} 
 \begin{frame}{Prior Work: Consistent Compass Trivializes APF}
 	Consistent Compass: All robots agree on the orientation of both axes. \\
 	\pause
@@ -221,6 +224,7 @@
 	\end{columns}
 \end{frame}
 
+\subsection{Impossibility Results} 
 \begin{frame}{Prior Work: Good News}
 	\begin{theorem} 
 		APF is solvable deterministically for odd number of robots with OneAxis even in ASYNC \cite{flocchini08arbitrary}.
@@ -334,6 +338,7 @@
 \end{frame}
 
 
+\subsection{Leader Election and APF} 
 \begin{frame}{Prior Work: APF and Leader Election}
 	\begin{theorem} 
 		APF is solvable for $n \geq 3$ robots $\iff$ Leader election problem is solvable.
@@ -379,10 +384,12 @@
 \section{Our Results} 
 % insert description of puddle
 % demonstrate how odd case works in previous algorithm???
-\begin{frame}{Our Work: PUDDLE, a Randomized Approach}
+
+\subsection{PUDDLE: Randomized APF} 
+\begin{frame}{Our Work: PUDDLE, a Randomized OneAxis Approach}
 	Our Model:
 	\begin{itemize}
-		\item unit disks, opaque, history oblivious, ASYNC
+		\item unit disks, opaque, history oblivious, OneAxis, ASYNC
 	\end{itemize}
 	3 stages:
 	\begin{enumerate}
@@ -670,41 +677,41 @@
 		all bots in $l$, then $m$, and $r$.
 	\end{enumerate}
 		
-		\begin{figure}
-		\begin{tikzpicture}[scale=0.40]
-			\draw[help lines] (0,0) grid (8,8);
-
-			\draw [<->] (1,0) -- (1,8) ;
-			\draw [<->] (5,0) -- (5,8) ;
-			\draw [dashed, thick, blue,<->] (3,0) -- (3,8) ;
-			% circles on l
-			
-			\draw [red, fill, ultra thick] (1,1) circle [radius=0.5];
-			\draw [red, fill, ultra thick] (1,3) circle [radius=0.5];
-
-			% circle on m
-			\draw [red, fill, ultra thick] (3,5) circle [radius=0.5];
-
-			% circles on r
-			\draw [red, fill, ultra thick] (5,1) circle [radius=0.5];
-			\draw [red, fill, ultra thick] (5,3) circle [radius=0.5];
-			\draw [red, fill, ultra thick] (5,5) circle [radius=0.5];
-
-			% node labels
-			\node at (3,5) {$3$} ;
-			\node at (1,1) {$2$} ;
-			\node at (1,3) {$1$} ;
-			\node at (5,1) {$6$} ;
-			\node at (5,3) {$5$} ;
-			\node at (5,5) {$4$} ;
-
-			% line labels
-			\node[left] at (1,6) {$v_1$} ;
-			\node[right] at (5,6) {$v_2$} ;
-			\node[right] at (3,6) {$m$} ;
-		\end{tikzpicture}
-		\caption{Ordering}
-		\end{figure}
+		%\begin{figure}
+		%\begin{tikzpicture}[scale=0.40]
+		%	\draw[help lines] (0,0) grid (8,8);
+%
+%			\draw [<->] (1,0) -- (1,8) ;
+%			\draw [<->] (5,0) -- (5,8) ;
+%			\draw [dashed, thick, blue,<->] (3,0) -- (3,8) ;
+%			% circles on l
+%			
+%			\draw [red, fill, ultra thick] (1,1) circle [radius=0.5];
+%			\draw [red, fill, ultra thick] (1,3) circle [radius=0.5];
+%
+%			% circle on m
+%			\draw [red, fill, ultra thick] (3,5) circle [radius=0.5];
+%
+%			% circles on r
+%			\draw [red, fill, ultra thick] (5,1) circle [radius=0.5];
+%			\draw [red, fill, ultra thick] (5,3) circle [radius=0.5];
+%			\draw [red, fill, ultra thick] (5,5) circle [radius=0.5];
+%
+%			% node labels
+%			\node at (3,5) {$3$} ;
+%			\node at (1,1) {$2$} ;
+%			\node at (1,3) {$1$} ;
+%			\node at (5,1) {$6$} ;
+%			\node at (5,3) {$5$} ;
+%			\node at (5,5) {$4$} ;
+%
+%			% line labels
+%			\node[left] at (1,6) {$v_1$} ;
+%			\node[right] at (5,6) {$v_2$} ;
+%			\node[right] at (3,6) {$m$} ;
+%		\end{tikzpicture}
+%		\caption{Ordering}
+%		\end{figure}
 \end{frame}
 
 \begin{frame}{PUDDLE: Guarantees }
@@ -716,12 +723,13 @@
 					$$\sum_{i=1}^{k}{((\frac{1}{k})^i (\frac{k-1}{k})^{k-i} {k\choose i})^2} \leq 0.20$$
 			\end{itemize}
 		\item Probability of success is at least $0.43$. Consensus in 3 rounds (in expectation).
-		\item Algorithm works for Disk model
-		\item Guaranteed collision free (details in paper)
+		\item Algorithm works for Disk model (prev result for point model)
+		\item Guaranteed collision free (details in report)
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Revisiting APF....}
+\subsection{Result using SEC} 
+\begin{frame}{Revisiting APF with SEC}
 \begin{theorem}
 There exists no deterministic algorithm that solves the Leader Election Problem, even with chirality assumption.
 \end{theorem}
@@ -771,15 +779,40 @@ Idea: Find an initial configuration such that every robot's local view is the sa
 \end{figure}
 \end{frame}
 
-\begin{frame}{A randomized algorithm for APF}
-Some intuition
+\begin{frame}{An SEC Randomized Algorithm for APF}
+Some Notation:
 \begin{itemize}
-\item A trivial observation: Only one robot on the circumference of $SEC_p(\text{Robots})$ gives the leader.
-\pause
-\item Any underlying assumption?
-\pause
-\item Every robot sees every other robot
+\item $SEC$ - A circle of minimal radius enclosing the given points 
+\item $SEC_p$ - A circle of minimal radius enclosing the given points, centered at $p$
 \end{itemize}
+\pause
+Basic Idea:
+\begin{itemize}
+\item A trivial observation: If there is only one robot on the circumference of $SEC_p(\text{Robots})$, the robot on the circumference can be elected the leader. 
+\item Any underlying assumption? - Every robot sees every other robot 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+Some Notation:
+\begin{itemize}
+\item $SEC$ - A circle of minimal radius enclosing the given points 
+\item $SEC_p$ - A circle of minimal radius enclosing the given points, centered at $p$
+\end{itemize}
+
+Basic Idea:
+\begin{figure}[H]
+				\begin{tikzpicture}[scale=0.5]
+					\draw [red, fill] (9,5) circle [radius=0.1];
+					\draw [red, fill] (4,5) circle [radius=0.1];
+					\draw [red, fill] (5,6) circle [radius=0.1];
+					\draw [red, fill] (5,4) circle [radius=0.1];
+
+					\draw [blue, fill] (6,5) circle [radius=0.1];					
+					
+					\draw [blue] (6,5) circle [radius = 3];
+				\end{tikzpicture}
+			\end{figure}
 \end{frame}
 
 \begin{frame}{Algorithm Continued....}
@@ -787,25 +820,102 @@ Some intuition
 \item Let us assume that every robot gets to see every other robot
 \pause
 \item Compute $p=$\emph{CG(Robots)} - everyone agrees!!
-% insert image here
-\includegraphics[scale=0.4]{cg_sec.JPG}
 \item Compute $SEC_p(\text{Robots})$
 \item Robots on $SEC_p$ contest, others move outside $SEC_p$
 \end{itemize}
 \end{frame}
 
+\begin{frame}
+\begin{figure}[H]
+				\begin{tikzpicture}[scale=0.5]
+					\draw [red, fill] (7,5) circle [radius=0.1];
+					\draw [red, fill] (3,5) circle [radius=0.1];
+					\draw [red, fill] (5,7) circle [radius=0.1];
+					\draw [red, fill] (5,3) circle [radius=0.1];
+
+					\draw [blue, fill] (5,5) circle [radius=0.1];					
+					
+					\draw [black, fill] (6,6) circle [radius=0.1];
+					\draw [black, fill] (6,4) circle [radius=0.1];
+					\draw [black, fill] (4,4) circle [radius=0.1];
+					\draw [black, fill] (4,6) circle [radius=0.1];
+					
+					\draw [blue] (5,5) circle [radius = 2];
+				\end{tikzpicture}
+			\end{figure}
+\end{frame}
+
+\begin{frame}
+\begin{figure}[H]
+				\begin{tikzpicture}[scale=0.5]
+					\draw [red, fill] (7,5) circle [radius=0.1];
+					\draw [red, fill] (3,5) circle [radius=0.1];
+					\draw [red, fill] (5,7) circle [radius=0.1];
+					\draw [red, fill] (5,3) circle [radius=0.1];
+
+					\draw [blue, fill] (5,5) circle [radius=0.1];					
+					
+					\draw [black, fill] (9,9) circle [radius=0.1];
+					\draw [black, fill] (9,1) circle [radius=0.1];
+					\draw [black, fill] (1,9) circle [radius=0.1];
+					\draw [black, fill] (1,1) circle [radius=0.1];
+					
+					\draw [blue] (5,5) circle [radius = 2];
+
+				\end{tikzpicture}
+			\end{figure}
+\end{frame}
+
 \begin{frame}{Algorithm Continued....}
 \begin{itemize}
 \item Robots on $SEC_p$ more outward with probability $\frac{1}{|\text{number of robots on $SEC$ }|}$
-\pause
-\item \begin{figure}[ht!]
-\includegraphics[width=40mm]{tgt.JPG}
-\end{figure}
-\pause
 \item Robots compute $SEC_p(\text{Contesting Robots})$
-\item If only one robot on $SEC_p$, elected leader.
-\item otherwise one more round to elect.
+\item If only one robot on $SEC_p$, elect that to be the leader.
+\item Otherwise one more round to elect.
 \end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{figure}[H]
+				\begin{tikzpicture}[scale=0.5]
+					\draw [red, fill] (7,5) circle [radius=0.1];
+					\draw [red, fill] (3,5) circle [radius=0.1];
+					\draw [red, fill] (5,7) circle [radius=0.1];
+					\draw [red, fill] (5,3) circle [radius=0.1];
+
+					\draw [blue, fill] (5,5) circle [radius=0.1];					
+					
+					\draw [black, fill] (9,9) circle [radius=0.1];
+					\draw [black, fill] (9,1) circle [radius=0.1];
+					\draw [black, fill] (1,9) circle [radius=0.1];
+					\draw [black, fill] (1,1) circle [radius=0.1];
+					
+					\draw [blue] (5,5) circle [radius = 2];
+					
+					\draw [->] (7,5) -- (8,6.32) ;
+					\draw [-] (7,3) -- (7,7) ;
+				\end{tikzpicture}
+			\end{figure}
+\end{frame}
+
+\begin{frame}
+\begin{figure}[H]
+				\begin{tikzpicture}[scale=0.5]
+					\draw [red, fill] (8,6.32) circle [radius=0.1];
+					\draw [black, fill] (3,5) circle [radius=0.1];
+					\draw [black, fill] (5,7) circle [radius=0.1];
+					\draw [black, fill] (5,3) circle [radius=0.1];
+
+					\draw [blue, fill] (5,5) circle [radius=0.1];					
+					
+					\draw [black, fill] (9,9) circle [radius=0.1];
+					\draw [black, fill] (9,1) circle [radius=0.1];
+					\draw [black, fill] (1,9) circle [radius=0.1];
+					\draw [black, fill] (1,1) circle [radius=0.1];
+					
+					\draw [blue] (5,5) circle [radius = 3.27];
+				\end{tikzpicture}
+			\end{figure}
 \end{frame}
 
 \begin{frame}{Ensuring every robot sees every other robot}
@@ -815,15 +925,34 @@ Some intuition
 \item If $NO$, do the following...
 \item Compute $SEC_p(\text{Local View})$
 \item Move to circumference of $SEC_p$
-\item
 \end{itemize}
 \end{frame}
-\begin{frame}{Open Problems}
+
+\section{Open Problems and Future Work} 
+\begin{frame}{Open Problems and Future Work}
+Open Problems:
 \begin{itemize}
 \item Taking up too much space!!! Can one bound it? 
 \pause
 \item What if there are obstacles in the plane - look at obstacles as line segments on $\mathbb{R}^2$
 \end{itemize}
+\pause
+Future Directions:
+\begin{itemize}
+	\item Two randomized algorithms for circle formation; more space efficient
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Summary}
+	\begin{itemize}
+		\item Prior work solves APF for odd number of robots with OneAxis assumption.
+		\pause
+		\item Our work:
+			\begin{itemize}
+				\item APF solved for even robots with OneAxis
+				\item APF solved with no axis assumptions; less space efficient
+			\end{itemize}
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Thank You}
