@@ -3,7 +3,10 @@
 \usepackage[hscale=0.8, vscale=0.8]{geometry}
 
 \usepackage{graphicx}
+\usepackage{tikz}
 \usepackage{verbatim}
+\usepackage{subcaption} % for subfigures
+
 
 % for algorithmicx package
 \usepackage{algorithm}
@@ -113,8 +116,14 @@
 \address{\{ ajdt, sivanr\}@cs.washington.edu}
 
 \begin{abstract}
-absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. absract. 
-
+The Arbitrary Patter Formation(APF) problem requires a group of $n$  mobile robots form a  target pattern on 
+the $\RR^2$ plane in finite time without explicit communication. 
+APF has been studied in the literature under various
+assumptions such as restrictions on target patterns, assumptions on the coordinate 
+axes of each robot. All prior work has been in a deterministic setting. 
+Here, we study APF when given access to randomness.
+We revisit some of the established work, in particular an impossibility result for APF 
+when $n$ is even and a OneAxis agreement exists between robots, and we apply randomness to break the impossibility result. 
 \end{abstract}
 
 \begin{keyword}
@@ -123,21 +132,237 @@ fat robots, abstract pattern formation, mobile robots
 
 \end{frontmatter}
 
-%% \linenumbers
-
-%% main text
 \section{Introduction}
-\label{}
+% include sources that corroborate these uses 
+A recent trend in robotics has been toward the development of simple, commodity robots that can
+be composed and arranged in a number of configurations to perform a complex task. The benefits of using composable,
+simple robots in lieu of monolithic single purpose robots include a greater ability to leverage prior work in
+robotics, and greater localization of failures -- so that a single incapacitated robot in a group is replaced
+and taken offline rather than an entire monolithic machine. In many settings, failure may be frequent due to 
+hazardous conditions, and so priority is placed on making the mobile robots cost-effective and therefore 
+as simple as possible. As such, communication between robots is either limited or not feasible. This presents a
+new challenge in that a group of robots must cooperate to form a configuration without any explicit communication. \\
+
+The Arbitrary Pattern Formation (APF) problem rises out of this challenge. Concretely, we are given
+a set of $n$ robots. The position of each robot $i$ on the 2D plane is given by $p_i \in \RR^2$, and we
+describe a configuration of robots $\EE$ as an $n$-tuple of positions $\EE = (x_1, \ldots x_n)$.
+The APF problem requires the robots to form some arbitrary pattern $\PP = (p_1, \ldots p_n)$ in finite
+time beginning from some initial configuration $\EE$. Furthermore, no pair of robots $i$, $j$ can 
+communicate explicitly with each other. Each robot runs a local instance of some algorithm to
+achieve consensus and can only perform three operations: \textit{Look, Move, and Wait}. A \textit{Look}
+operation is an observation of the configuration $\EE_i$ of the other robots with respect to robot
+$i$'s local view. A \textit{Move} operation is a straight line motion to a target point $t \in \RR^2$.
+During a \textit{Wait} operation, a robot simply decides to remain at its current location. \\
+
+In the following subsection we discuss in greater detail the various modelling choices that have been
+considered in the literature; focusing on the modelling choices relevant to our contribution. In
+section \ref{prevWork}, we give an incomplete account on results and recent work on the APF problem. We
+emphasize results that our contribution depends upon or extends. In section \ref{ourRes}, we discuss
+two distinct approaches we develop to solve the APF problem for any number of robots. Finally,
+we conclude with \ref{conc} by discussing open problems, and unresolved questions in regard to our contribution.
+
+\subsection{Robot Models} 
+\label{models}
+Due to the range of settings APF may be applied, a number of robot models have been considered 
+in the literature. History oblivious models, for example, have insufficient memory to remember
+a configuration $\EE$ that occurred in a previous Look-Move-Wait cycle. Robot vision is another 
+source of modelling choice. Robots can be modelled to see arbitrarily far, up to some distance $\delta$, or
+with some error in measurement $\epsilon$. Likewise, robots may be able to see through each other as in the 
+\textit{transparent} model, or their line of sight may be limited by other robots as in the \textit{opaque}
+model. \\
+
+Two assumptions are particularly germane to the work we present in this paper. Many of the results in 
+the literature, have been established for robots modelled as points on the 2D plane. Alternatively,
+robots could be modelled as unit disks. The disk model is closer to the applied setting, and is being
+% TODO: insert citation for gathering problem
+studied more extensively in recent works. Another important assumption is that of compass orientations.
+All robot models assume each robot $i$ possesses a \textit{compass} $C_i$ used to map an $x-y$ coordinate system
+onto the 2D plane that it observes. In the most general case, each compass $C_i$ is arbitrarily oriented with
+respect to the other robots' compasses. Thus, any two robots $i$ and $j$ may have very distinct notions
+of the orientation of the $x$ and $y$ axes. Some models make a very strong assumption that all compasses $C_i$ 
+are in complete agreement on the orientation of both axes. This assumption is referred to in the 
+literature as \textit{consistent compass}. A weaker assumption, \textit{OneAxis} is 
+that all robots' compasses agree on the orientation of just a single axis. \\% TODO: insert figure here
+
+In our work, we examine a robot model that is history oblivious, disk-based, and (for one result) assumes OneAxis.
+% synch vs async??
+
 
 \section{Known results}
-\label{}
+	\label{prevWork}
+	We refer interested readers to \cite{flocchini12distrib} for a comprehensive survey of results for
+	APF and related problems. In this section, we are primarily concerned with results directly relevant
+	to our work. \\
+
+	In \ref{models}, we introduced the consistent compass assumption. It is well-known that consistent compass 
+	trivializes APF problem. 
+	\begin{theorem} 
+		With a consistent compass assumption, Arbitrary Pattern Formation is solvable, even in an asynchronous setting.
+		\cite{flocchini08arbitrary}
+	\end{theorem} 
+	\begin{proof}
+		The consistent compass assumption requires that all robots agree on the orientation of both compass
+		axes. Since each robot knows the target pattern \textit{a priori}, each robot can independently compute
+		a total ordering of the points constituting the pattern as shown in \ref{ccfig1}. In the example figure,
+		the points are ordered by decreasing $y$-coordinate and then increasing $x$-coordinate. Likewise, 
+		all of the robots can assign an ordering to themselves in a similar fashion as shown in \ref{ccfig2}.
+		Having achieved this ordering, each robot is assigned to a unique position in the pattern, and the robots
+		can move in order, one at a time to form the target pattern.
+	\end{proof}
+	
+	\begin{figure}[H]
+		\begin{subfigure}{0.5\textwidth}
+		\label{ccfig1}
+		\centering
+		\begin{tikzpicture}[scale=0.60]
+			\draw[help lines] (2,2) grid (7,7);
+
+			% circles on l
+			\draw [red, fill, ultra thick] (5,5) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (4,4) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (6,4) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (3,3) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (5,3) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (7,3) circle [radius=0.2];
+
+			% node labels
+			\node[left] at (5,5) {$1$} ;
+			\node[left] at (4,4) {$2$} ;
+			\node[left] at (6,4) {$3$} ;
+			\node[left] at (3,3) {$4$} ;
+			\node[left] at (5,3) {$5$} ;
+			\node[left] at (7,3) {$6$} ;
+		\end{tikzpicture}
+		\caption{Target Pattern}
+		\end{subfigure}
+		\begin{subfigure}{0.5\textwidth}
+		\label{ccfig2}
+		\centering
+		\begin{tikzpicture}[scale=0.60]
+			\draw[help lines] (2,2) grid (7,7);
+
+			% circles 
+			\draw [red, fill, ultra thick] (2,5) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (3,4) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (6,2) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (2,3) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (5,6) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (7,2) circle [radius=0.2];
+
+			% node labels
+			\node[left] at (2,5) {$2$} ;
+			\node[left] at (3,4) {$3$} ;
+			\node[left] at (6,2) {$5$} ;
+			\node[left] at (2,3) {$4$} ;
+			\node[left] at (5,6) {$1$} ;
+			\node[left] at (7,2) {$6$} ;
+		\end{tikzpicture}
+			\caption{Ordering} \label{fig:hi}
+		\end{subfigure}
+		\caption{Consistent Compass ordering}
+	\end{figure}
+
+	Even though consistent compass trivializes APF, the same cannot be said about OneAxis. There are, however,
+	two very interesting results also due to Flocchini et. al. which are particularly relevant to our work.
+	In particular it's known that:
+	\begin{theorem} 
+		In a deterministic setting with a \textit{OneAxis} assumption, 
+		Arbitrary Pattern Formation is solvable only if $n$ is odd. This is true even in 
+		an asynchronous setting.\cite{flocchini08arbitrary}
+	\end{theorem} 
+
+	\begin{proof}
+		The OneAxis assumption requires that all $n$ robots have consensus on the orientation of one axis. 
+		Without loss of generality, we assume the $y$ axis is agreed upon by all robots. Because all robots
+		agree on the orientation of the $y$ axis, they can agree on the location of vertical axes $v_1$, 
+		$v_2$ which go through the left-most and right-most robots on the plane. In \ref{oddfig1}, for example,
+		$r_1$ and $r_3$ are the left-most and right-most robots with such axes going through their positions.
+		Note that because we do not have consensus on the direction of the $x$ axis, an arbitrary pair of robots
+		$r_i$ and $r_j$ may have a different notion of which among $r_1$ and $r_3$ is the left-most and which is
+		the right-most robot. Regardless, the location of $v_1$ and $v_2$ will be the same for all robots.
+		As such, in finite time, we can have every robot line up on either $v_1$ or $v_2$, whichever
+		axis is closest. Because $n$ is odd, once every robot is on one of the vertical axes, it must
+		be that one of the axes has a majority of robots on it. We elect the topmost robot
+		on this axis as the leader. As we've shown leader election is enougn to solve the APF problem.
+		Figure \ref{oddfig2} gives an example, where the circled robot $r_5$ has been elected leader.
+
+		% TODO: make sure robot notation is consistent r_i
+
+	\end{proof}
+
+	\begin{figure}[H]
+		\begin{subfigure}{0.5\textwidth}
+		\label{oddfig1}
+		\centering
+		\begin{tikzpicture}[scale=0.50]
+			\draw[help lines] (0,0) grid (6,6);
+
+			\draw [<->] (1,0) -- (1,6) ;
+			\draw [<->] (5,0) -- (5,6) ;
+			% circles
+			\draw [red, fill, ultra thick] (1,1) circle [radius=0.2];;
+			\draw [red, fill, ultra thick] (2,3) circle [radius=0.2];;
+			\draw [red, fill, ultra thick] (5,3) circle [radius=0.2];;
+			\draw [red, fill, ultra thick] (3,5) circle [radius=0.2];;
+			\draw [red, fill, ultra thick] (4,5) circle [radius=0.2];;
+
+			% node labels
+			\node[below] at (1,1) {$r_1$} ;
+			\node[below] at (2,3) {$r_2$} ;
+			\node[above] at (5,3) {$r_3$} ;
+			\node[above] at (3,5) {$r_4$} ;
+			\node[above] at (4,5) {$r_5$} ;
+			% line labels
+			\node[left] at (1,6) {$v_1$} ;
+			\node[right] at (5,6) {$v_2$} ;
+		\end{tikzpicture}
+		\caption{vertical axes}
+		\end{subfigure}
+		\begin{subfigure}{0.5\textwidth}
+		\label{oddfig2}
+		\centering
+		\begin{tikzpicture}[scale=0.50]
+			\draw[help lines] (0,0) grid (6,6);
+			\draw [<->] (1,0) -- (1,6) ;
+			\draw [<->] (5,0) -- (5,6) ;
+			% circles
+			\draw [red, fill, ultra thick] (1,1) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (1,3) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (5,1) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (5,2) circle [radius=0.2];
+			\draw [red, fill, ultra thick] (5,5) circle [radius=0.2];
+			\draw [cyan, thick] (5,5) circle [radius=0.9]; % leader circle 
+			% node labels
+			\node[below] at (1,1) {$r_1$} ;
+			\node[below] at (1,3) {$r_2$} ;
+			\node[right] at (5,1) {$r_3$} ;
+			\node[above] at (5,2) {$r_4$} ;
+			\node[above] at (5,5) {$r_5$} ;
+			% line labels
+			\node[left] at (1,6) {$v_1$} ;
+			\node[right] at (5,6) {$v_2$} ;
+		\end{tikzpicture}
+			\caption{unbalanced configuration} \label{fig:hi}
+		\end{subfigure}
+		\caption{APF Solved for odd $n$ }
+	\end{figure}
 
 \section{Our Results}
-\label{}
+\label{ourRes}
 
 
-\section{Notation} 
-% fix up later, right now just contains ideas
+In this section we present two distinct approaches to solving APF. The first, which we call PUDDLE, is 
+an algorithm that extends a result by Flocchini, et. al. in \cite{flocchini08arbitrary} with randomness.
+We produce an algorithm that solves APF for any number of robots, in a disk-based, asynchronous, history
+oblivious model with a OneAxis assumption. We further prove that the algorithm is collision-free, and
+that it converges on an arbitrary pattern in a bounded number of steps. 
+Our second result solves the APF problem again with randomness, but requiring no assumptions on the axes.
+Here we use of new method that requires computing the \textit{smallest enclosing circle} (SEC) of
+the robot group centered at a common point. We are only able to prove this result for the point-based
+model unfortunately.
+
+\subsection{Notation} 
+% TODO: necessary??? fix up later, right now just contains ideas
 refer to a state $S$ over $n$ robots as $S = (s_1, \ldots s_n)$ where each $s_i \in \RR^2$. For simplicity
 $S$ refers to the global view. In refering to the local view of a robot use $S_i$. View is function of orientation
 of each bot
@@ -317,7 +542,8 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 		by a sum of squares over the binomial distribution:
 		$$\sum_{i=1}^{k}{((\frac{1}{k})^i (\frac{k-1}{k})^{k-i} {k\choose i})^2} \label{eq1}$$
 
-		\ref{eq1} is equal to $((\frac{k-1}{k})^{2k} ) \cdot ( F_1(-k, -k ; 1 ; \frac{1}{(k-1)^2}) - 1) \leq .20 \text{ for } 
+		\ref{eq1} is $\leq  .20 \text{ for } 
+		%\ref{eq1} is equal to $((\frac{k-1}{k})^{2k} ) \cdot ( F_1(-k, -k ; 1 ; \frac{1}{(k-1)^2}) - 1) \leq .20 \text{ for } 
 		k \geq 6$. Since, $\frac{1}{e} \leq .37$, the total probability of failure is $\leq .57$. Considering, a complete
 		iteration as a Bernoulli process with success probability $p = 0.43$, the expected number of iterations until 
 		an unbalanced configuration is reached is $\frac{1}{p} \approx 2.32$. Thus, we expect a constant number of iterations
@@ -408,7 +634,7 @@ $\EE$ is the initial state of all robots, $\PP$ is the final state.
 \subsection{SEC stuff } 
 
 \section{Conclusion}
-\label{}
+\label{conc}
 
 %% The Appendices part is started with the command \appendix;
 %% appendix sections are then done as normal sections
@@ -624,4 +850,14 @@ This method is called to form a pattern when all robots are on $m$.
 \end{document}
 \endinput
 
+% TODO
+%
+% intro
+% previous results
+% my algorithm
+% Siva's stuff
+% conclusion
+
+%HAVE SIVA LOOK AT
+% abstract -- reuse Siva's
 
