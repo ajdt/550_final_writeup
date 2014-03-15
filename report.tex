@@ -205,16 +205,15 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 	\begin{proof}
 		The consistent compass assumption requires that all robots agree on the orientation of both compass
 		axes. Since each robot knows the target pattern \textit{a priori}, each robot can independently compute
-		a total ordering of the points constituting the pattern as shown in \ref{ccfig1}. In the example figure,
+		a total ordering of the points constituting the pattern as shown in figure \ref{ccfig1}. In the example figure,
 		the points are ordered by decreasing $y$-coordinate and then increasing $x$-coordinate. Likewise, 
-		all of the robots can assign an ordering to themselves in a similar fashion as shown in \ref{ccfig2}.
+		all of the robots can assign an ordering to themselves in a similar fashion as shown in figure \ref{ccfig2}.
 		Having achieved this ordering, each robot is assigned to a unique position in the pattern, and the robots
 		can move in order, one at a time to form the target pattern.
 	\end{proof}
 	
 	\begin{figure}[H]
 		\begin{subfigure}{0.5\textwidth}
-		\label{ccfig1}
 		\centering
 		\begin{tikzpicture}[scale=0.60]
 			\draw[help lines] (2,2) grid (7,7);
@@ -236,9 +235,9 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 			\node[left] at (7,3) {$6$} ;
 		\end{tikzpicture}
 		\caption{Target Pattern}
+		\label{ccfig1}
 		\end{subfigure}
 		\begin{subfigure}{0.5\textwidth}
-		\label{ccfig2}
 		\centering
 		\begin{tikzpicture}[scale=0.60]
 			\draw[help lines] (2,2) grid (7,7);
@@ -259,7 +258,8 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 			\node[left] at (5,6) {$1$} ;
 			\node[left] at (7,2) {$6$} ;
 		\end{tikzpicture}
-			\caption{Ordering} \label{fig:hi}
+			\caption{Ordering} 
+			\label{ccfig2}
 		\end{subfigure}
 		\caption{Consistent Compass ordering}
 	\end{figure}
@@ -287,7 +287,6 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 	\end{proof}
 	\begin{figure}[H]
 		\begin{subfigure}{0.5\textwidth}
-		\label{equivfig1}
 		\centering
 		\begin{tikzpicture}[scale=0.60]
 			\draw[help lines] (0,0) grid (6,2);
@@ -302,9 +301,9 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 			\node[above] at (5,1) {$r_3$} ;
 		\end{tikzpicture}
 		\caption{APF solves Leader Election}
+		\label{equivfig1}
 		\end{subfigure}
 		\begin{subfigure}{0.5\textwidth}
-		\label{equivfig2}
 		\centering
 		\begin{tikzpicture}[scale=0.60]
 			\draw[help lines] (0,0) grid (6,3);
@@ -322,7 +321,8 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 			\draw [->] (3,1) -- (5,1) ;
 			\node[right, blue, thick] at (5,1) {$x$} ;
 		\end{tikzpicture}
-			\caption{Leader Election solves APF} \label{fig:hi}
+			\caption{Leader Election solves APF} 
+		\label{equivfig2}
 		\end{subfigure}
 		\caption{Equivalence of APF and Leader Election}
 	\end{figure}
@@ -406,7 +406,7 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 			\node[left] at (1,6) {$v_1$} ;
 			\node[right] at (5,6) {$v_2$} ;
 		\end{tikzpicture}
-			\caption{Leader is elected} \label{fig:hi}
+			\caption{Leader is elected} 
 		\end{subfigure}
 		\caption{APF Solved for odd $n$ }
 	\end{figure}
@@ -474,7 +474,7 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 			\node[above] at (4, 1) {$x$};
 			\node[above] at (4, 5) {$x$};
 		\end{tikzpicture}
-			\caption{Initial Configuration} \label{fig:hi}
+			\caption{Initial Configuration} 
 		\end{subfigure}
 		\caption{APF Solved for odd $n$ }
 	\end{figure}
@@ -529,11 +529,11 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 	As shown earlier, this problem is not generally solvable for an even number of robots. In finite time, 
 	the robots either reach consensus on the x-axis or elect a leader. The algorithm proceeds as follows
 	\begin{enumerate}
-		\item Compute two vertical lines $l,r$ tangent to the convex hull of $\EE$, and the vertical line
-		at their midpoint $m$. We refer to $L$ as the region on the same side of $l$ with respect to 
-		the line $m$, and refer to $R$ similarly .
+		\item Compute two vertical lines $v_1,v_2$ tangent to the convex hull of $\EE$, and the vertical line
+		at their midpoint $m$. 
 		\item Let $r$ refer to the line on the side with the majority of robots, and $l$ refer to the side
-		with a minority of robots.
+		with a minority of robots. We refer to $L$ as the region on the same side of $l$ with respect to 
+		the line $m$, and refer to $R$ similarly .
 		\item If there is a side with a majority of the robots, then we refer to the configuration as
 		\textit{unbalanced}, and the side with majority determines the x-axis direction.
 		the x axis.
@@ -547,7 +547,7 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 		of the robots and form the arbitrary pattern.
 	\end{enumerate}
 
-	We note that \cite{flocchini12distrib} provides an algorithm for APF from an unbalanced configuration.
+	We note that even though \cite{flocchini12distrib} provides an algorithm for APF from an unbalanced configuration.
 	Since this algorithm assumes a point-based model, we present our own algorithm for this stage of
 	the problem. The above algorithm describes the global actions each robot will take. 
 	We now give a more detailed view of the algorithm from the viewpoint of the individual robots.
@@ -555,6 +555,15 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 	operations as sub-functions which can be found in the appendix.
 
 	% algorithm
+	Part 1 of the algorithm given below, ensures that all robots are aligned on two vertical axes $v_1$, and $v_2$.
+	Initially, each robot $r_i$ begins in a START state and checks to see if it's local configuration $\EE_i$ is
+	aligned or not. If it's local configuration is not such that all robots are on two vertical axes, then
+	$r_i$ checks to see if it is the topmost robot by y-coordinate that isn't on $v_1$ or $v_2$. If so, then it
+	moves horizontally to either of the vertical axes. If another robot is currently occupying the position
+	robot $r_i$ intends to occupy, then $r_i$ moves upward along the $y$ axis until this is no longer the case.
+	All other robots do not move during this phase as indicated by dest = null (i.e. their destination is set
+	to null for the time being). Once allr obots are on either $v_1$ or $v_2$, then the state of the robots
+	changes to UNBALANCE.
 	\begin{algorithm}[H]
 	\begin{algorithmic}[1]
 	\Procedure{Puddle}{$\EE_i$, $\PP$}
@@ -566,17 +575,17 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 				\If{ not isAligned($\EE_i$)} % insert snippet to move onto line l/r
 					\State (status, dir) = topmostLR($\EE_i$, i)
 					\If{status}
-						\State let $h_i$ be the horizontal line through $y_i$
-						\State let $l'$ be the vertical axis either $l$ or $r$ in the direction of dir
+						\State let $h_i$ be the horizontal line through the y-coordinate, $y_i$, of robot $i$
+						\State let $l'$ be the vertical axis either $v_1$ or $v_2$ in the direction of dir
 						\If{ if the point at the intersection of $h_i$ and $l'$ cannot be occupied}
 							\State move one unit in the positive $y$ direction.
 						\EndIf
-						\State move in direction $dir$ along $h_i$ until you are on $l$ or $r$
+						\State move in direction $dir$ along $h_i$ until you are on $v_1$ or $v_2$
 					\EndIf
 				\Else
 					\State dest = null
 				\EndIf
-				\If{ not $\exists$ robot $p$ not on $l$ or $r$}
+				\If{ not $\exists$ robot $p$ not on $v_1$ or $v_2$}
 					\State state = UNBALANCE
 				\EndIf
 			\EndCase
@@ -584,14 +593,37 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 	\end{algorithmic}
 	\end{algorithm}
 
+	The second stage of our algorithm is captured mostly by the case UNBALANCE. We refer to the
+	vertical line between $v_1$ and $v_2$ as $m$. In this case
+	we first check to see if there is a robot not on $v_1$, $v_2$ or $m$, then we wait until
+	that robot has finished moving and is placed on one of these vertical lines. 
+	We let L and R refer to the sets of robots on the left and right of the line $m$ respectively from a global view
+	of the current configuration $\EE$. Robot $r_i$ then checks to see if the same number of 
+	robots are on $v_1$ and $v_2$ (if this is true then we run a procedure to unbalance the current configuration.
+	Note that each robot has knowledge of how many robots there are in total, and can directly observe
+	how many robots are on every vertical axis except his/her own. This is enough information to know the
+	number of robots on each axis. \\
+
+	When the getUnbalanced() procedure (see appendix) is run, each robot moves to line $m$ with probability 
+	$\frac{1}{k}$, where $k$ is the number of robots on $v_1$ added to the number of robots on $v_2$.
+	It's possible that a robot from both $v_1$ and $v_2$ end up moving toward the same position on 
+	$m$. In this case we apply randomness again to have each robot continue moving downward vertically
+	with probability $\frac{1}{2}$ until a position is found on $m$ that is free. We avoid
+	conflicts between robots on the same side of $m$ by setting a precendence constraint where if robots 
+	$r_i,r_k$ both decide to move, and $r_k$ has a smaller $y$ coordinate than $r_i$(i.e. $y_k < y_i$), then $r_k$ makes
+	progress toward $m$ first. This logic for moving toward $m$ is captured in the case
+	MOVE\_TO\_M.
+
 	\begin{algorithm}[H]
 	\begin{algorithmic}[1]
 	\caption{PUDDLE part 2: unbalancing}
 	\Procedure{Puddle}{$\EE_i$, $\PP$}
 		
+			\State //  we let $m$ refer to the vertical line between $v_1$ and $v_2$
+			\State // here we let L and R refer to the sets of robots left and right of the line $m$ respectively from a global view
 			\State
 			\Case{UNBALANCE}
-				\If{ $\exists p \in \EE_i$ not on $l, r,$ or $m$ } \Comment another robot is moving
+				\If{ $\exists p \in \EE_i$ not on $v_1, v_{2},$ or $m$ } \Comment another robot is moving
 					\State dest := null
 					\State return
 				\EndIf
@@ -626,8 +658,18 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 	\end{algorithmic}
 	\end{algorithm}
 
-	\clearpage % avoid having our algorithm moved to the end
-
+	%\clearpage % avoid having our algorithm moved to the end
+	In the third stage there are two possible states of the world. One possibility is that the getUnbalanced() procedure
+	has achieved a state where there are more robots on $v_1$ than $v_2$, or vice versa. In
+	this case, we simply we decide that the $x$ axis is oriented in the direction of the axis with a majority
+	of robots. We then call two routines lineup() and formPattern() which solve the APF problem for the disk 
+	model with consistent compass. In the second case, all robots are lined up on $m$. This is possible, if
+	the getUnbalanced() routine continually fails to break symmetry between $v_1$ and $v_2$, if by some
+	chance the same number of robots move from both axes toward $m$. In this case, since all the robots
+	are on one vertical axis, and OneAxis tells us that they agree on this axis orientation, we elect
+	the top-most robot on $m$ as the leader. We then call the leaderPattern() routine which solves
+	APF given a leader has been elected for the disk robot model.
+	
 	\begin{algorithm}[H]
 	\begin{algorithmic}
 	\Procedure{PUDDLE}{args}
@@ -938,7 +980,6 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 \begin{algorithm}[H]
 \begin{algorithmic}[1]
 \Procedure{leaderPattern()}{$\EE_i, \PP$}
-
 	uniformSpacing($\EE_i$) % TODO: add state, so we know we've done this once
 	\If{$i$ is the top-most robot}
 		\State compute point $p$, right $(n-1)$ units from $i$'s current location
