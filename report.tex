@@ -144,7 +144,7 @@ as simple as possible. As such, communication between robots is either limited o
 new challenge in that a group of robots must cooperate to form a configuration without any explicit communication. \\
 
 The Arbitrary Pattern Formation (APF) problem rises out of this challenge. Concretely, we are given
-a set of $n$ robots. The position of each robot $i$ on the 2D plane is given by $p_i \in \RR^2$, and we
+a set of $n$ robots. The position of each robot $r_i$ on the 2D plane is given by $p_i \in \RR^2$, and we
 describe a configuration of robots $\EE$ as an $n$-tuple of positions $\EE = (x_1, \ldots x_n)$.
 The APF problem requires the robots to form some arbitrary pattern $\PP = (p_1, \ldots p_n)$ in finite
 time beginning from some initial configuration $\EE$. Furthermore, no pair of robots $i$, $j$ can 
@@ -174,19 +174,74 @@ model. \\
 Two assumptions are particularly germane to the work we present in this paper. Many of the results in 
 the literature, have been established for robots modelled as points on the 2D plane. Alternatively,
 robots could be modelled as unit disks. The disk model is closer to the applied setting, and is being
-% TODO: insert citation for gathering problem
-studied more extensively in recent works. Another important assumption is that of compass orientations.
-All robot models assume each robot $i$ possesses a \textit{compass} $C_i$ used to map an $x-y$ coordinate system
+studied more extensively in recent works such as \cite{agatha13distrib}.
+Another important assumption is that of compass orientations.
+All robot models assume each robot $r_i$ possesses a \textit{compass} $C_i$ used to map an $x-y$ coordinate system
 onto the 2D plane that it observes. In the most general case, each compass $C_i$ is arbitrarily oriented with
-respect to the other robots' compasses. Thus, any two robots $i$ and $j$ may have very distinct notions
+respect to the other robots' compasses. Thus, any two robots $r_i$ and $r_j$ may have very distinct notions
 of the orientation of the $x$ and $y$ axes. Some models make a very strong assumption that all compasses $C_i$ 
 are in complete agreement on the orientation of both axes. This assumption is referred to in the 
 literature as \textit{consistent compass}. A weaker assumption, \textit{OneAxis} is 
-that all robots' compasses agree on the orientation of just a single axis. \\% TODO: insert figure here
+that all robots' compasses agree on the orientation of just a single axis. Refer
+to figure \ref{comp} for examples of both compass assumptions. \\
 
 In our work, we examine a robot model that is history oblivious, disk-based, and (for one result) assumes OneAxis.
-% synch vs async??
+% TODO: synch vs async??
 
+\begin{figure}[H]
+	\begin{subfigure}{0.5\textwidth}
+	\centering
+	\begin{tikzpicture}[scale=0.60]
+					\draw[help lines] (2,2) grid (6,6);
+					\draw [red, fill] (5,5) circle [radius=0.2];
+					\draw [red, fill] (3,4) circle [radius=0.2];
+					\draw [red, fill] (5,2) circle [radius=0.2];
+					% axes 
+					\draw [->] (5,5) -- (5,6) ;
+					\draw [->] (5,5) -- (6,5) ;
+					\draw [->] (3,4) -- (3,5) ;
+					\draw [->] (3,4) -- (4,4) ;
+					\draw [->] (5,2) -- (5,3) ;
+					\draw [->] (5,2) -- (6,2) ;
+					% lables
+					\node[above] at (5,6) {$y$} ;
+					\node[right] at (6,5) {$x$} ;
+					\node[above] at (3,5) {$y$} ;
+					\node[right] at (4,4) {$x$} ;
+					\node[above] at (5,3) {$y$} ;
+					\node[right] at (6,2) {$x$} ;
+	\end{tikzpicture}
+	\caption{Consistent Compass: All compasses oriented the same}
+	\label{compfig1}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+	\centering
+	\begin{tikzpicture}[scale=0.60]
+					\draw[help lines] (2,2) grid (6,6);
+					\draw [red, fill] (5,5) circle [radius=0.2];
+					\draw [red, fill] (3,4) circle [radius=0.2];
+					\draw [red, fill] (5,2) circle [radius=0.2];
+					% axes 
+					\draw [->] (5,5) -- (5,6) ;
+					\draw [->] (5,5) -- (6,5) ;
+					\draw [->] (3,4) -- (3,5) ;
+					\draw [blue, ultra thick, ->] (3,4) -- (2,4) ;
+					\draw [->] (5,2) -- (5,3) ;
+					\draw [->] (5,2) -- (6,2) ;
+					% lables
+					\node[above] at (5,6) {$y$} ;
+					\node[right] at (6,5) {$x$} ;
+					\node[above] at (3,5) {$y$} ;
+					\node[blue, left] at (2,4) {$x$} ;
+					\node[above] at (5,3) {$y$} ;
+					\node[right] at (6,2) {$x$} ;
+	\end{tikzpicture}
+		\caption{OneAxis: Only the y axis is consistent among all robots} 
+		\label{compfig2}
+	\end{subfigure}
+	\caption{Compass orientation assumptions}
+	\label{comp}
+\end{figure}
 
 \section{Known results}
 	\label{prevWork}
@@ -351,7 +406,6 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 		be that one of the axes has a majority of robots on it. We elect the topmost robot
 		on this axis as the leader. As we've shown leader election is enougn to solve the APF problem.
 		Figure \ref{oddfig2} gives an example, where the circled robot $r_5$ has been elected leader.
-		% TODO: make sure robot notation is consistent r_i
 	\end{proof}
 
 	\begin{figure}[H]
@@ -497,21 +551,17 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 	the robot group centered at a common point. We are only able to prove this result for the point-based
 	model unfortunately.
 
-\subsection{Notation} 
-	% TODO: necessary??? fix up later, right now just contains ideas
-	refer to a state $S$ over $n$ robots as $S = (s_1, \ldots s_n)$ where each $s_i \in \RR^2$. For simplicity
-	$S$ refers to the global view. In refering to the local view of a robot use $S_i$. View is function of orientation
-	of each bot
-
-
-
-	$\EE$ is the initial state of all robots, $\PP$ is the final state.
+%\subsection{Notation} 
+%	refer to a state $S$ over $n$ robots as $S = (s_1, \ldots s_n)$ where each $s_i \in \RR^2$. For simplicity
+%	$S$ refers to the global view. In refering to the local view of a robot use $S_i$. View is function of orientation
+%	of each bot
+%	$\EE$ is the initial state of all robots, $\PP$ is the final state.
 
 % Armando insert writing here!!!
-\subsection{Breaking ties even case } 
+\subsection{PUDDLE: A OneAxis Even $n$ Algorithm } 
 	In this section we follow up on a result in \cite{flocchini12distrib} where it's proved that
 	APF is solvable deterministically with a OneAxis agreement if the number of robots $n$ is
-	odd. Here, we develop a randomized algorithm that solves APF for any number of robots
+	odd. Here, we develop a randomized algorithm called PUDDLE that solves APF for any number of robots
 	and extends the result to the disk-based model. Formally, \cite{flocchini12distrib} states :
 	\begin{theorem} 
 		Assuming OneAxis, APF is solvable only if $n$ is odd, and this can be done in ASYNC.
@@ -640,13 +690,13 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 
 			\Case{MOVE\_TO\_M}
 				\Comment robot is moving to $m$
-					\State let $l'$ be the line from which $i$ originated (either $l$ or $r$), and $L'$ the corresp. side
+					\State let $l'$ be the line from which $i$ originated (either $v_1$ or $v_2$), and $L'$ the corresp. side
 					\While{ $\exists$ some robot $k$, also on side $L'$ with $y_k < y_i$ }
 						\State Wait until robot $k$ is on $m$.
 					\EndWhile
 
 					\State Move downward vertically until finding a point $p = (x_p, y_p)$ on $m$ such that 
-						moving to $p$ won't block the line of sight of any robot on $l$ or $r$.
+						moving to $p$ won't block the line of sight of any robot on $v_1$ or $v_2$.
 					\While{ $\exists$ robot $k$, also moving toward $p$}
 						\State with $\frac{1}{2}$ probability keep moving downward
 					\EndWhile
@@ -701,15 +751,15 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 	\subsection{PUDDLE runs in linear time} 
 		We break up our analysis into three parts, each of which will be in linear time. The algorithm
 		begins in the START state, which arranges all robots on a the vertical tangents to the convex
-		hull $l$ and $r$. Each robot $i$ moves according to the topmost() function in the appendix, which requires
-		that robot $i$ be the topmost robot according to $y$ coordinate. Consequently, in the worst case 
-		the robots move one	at a time onto lines $l$ and $r$. Thus, $O(n)$ move steps are required to 
+		hull $v_1$ and $v_2$. Each robot $r_i$ moves according to the topmost() function in the appendix, which requires
+		that robot $r_i$ be the topmost robot according to $y$ coordinate. Consequently, in the worst case 
+		the robots move one	at a time onto lines $v_1$ and $v_2$. Thus, $O(n)$ move steps are required to 
 		complete this stage of the algorithm; where $n$ is the number of robots.
 		% TODO ensure the robots initially on $l$ and $r$ move downward for the above to work
 
 		Now we examine the unbalance procedure. Fix an arbitrary iteration of the unbalance procedure with,
-		there are exactly $\frac{k}{2}$ robots on $l$ and on $r$ each, and $n - k$ robots on line $m$. 
-		Thus, for any robot $i$ on $l$ or $r$ the probability that robot $i$ moves is 
+		there are exactly $\frac{k}{2}$ robots on $v_1$ and on $v_2$ each, and $n - k$ robots on line $m$. 
+		Thus, for any robot $i$ on $v_1$ or $v_2$ the probability that robot $i$ moves is 
 		$Pr(i \text{ moves }) = \frac{1}{k}$. The unbalance procedure will fail to create an unbalanced configuration
 		only if no robots move to $m$ on this iteration or the same number of robots from each side move
 		in this iteration. % define notion of an iteration more precisely
@@ -719,17 +769,18 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 		The probability that the same number of robots move from each side in an iteration is given 
 		by a sum of squares over the binomial distribution:
 		$$\sum_{i=1}^{k}{((\frac{1}{k})^i (\frac{k-1}{k})^{k-i} {k\choose i})^2} \label{eq1}$$
+		% TODO: show steps in this equation
 
-		\ref{eq1} is $\leq  .20 \text{ for } 
+		Since the above is $\leq  .20 \text{ for } 
 		%\ref{eq1} is equal to $((\frac{k-1}{k})^{2k} ) \cdot ( F_1(-k, -k ; 1 ; \frac{1}{(k-1)^2}) - 1) \leq .20 \text{ for } 
 		k \geq 6$. Since, $\frac{1}{e} \leq .37$, the total probability of failure is $\leq .57$. Considering, a complete
 		iteration as a Bernoulli process with success probability $p = 0.43$, the expected number of iterations until 
 		an unbalanced configuration is reached is $\frac{1}{p} \approx 2.32$. Thus, we expect a constant number of iterations
 		as $n$ grows asymptotically. To bound the amount of work done in a single iteration, we consider the worst case
-		where all robots on both $l$ and $r$ decide to move, and must reach consensus on placement in line $m$. 
+		where all robots on both $v_1$ and $v_2$ decide to move, and must reach consensus on placement in line $m$. 
 		The relevant code is in the MOVE\_TO\_M case of the PUDDLE algorithm. On each side, the algorithm requires that only 
 		one robot be moving vertically to locate a position on line $m$. Consensus, reduces to the case where a robot
-		from $q_l$ and a robot from $q_r$ from $l$ and $r$ respectively both attempt to enter 
+		from $q_l$ and a robot from $q_r$ from $v_1$ and $v_2$ respectively both attempt to enter 
 		points $p_l$ and $p_r$ on $m$ that are within unit distance. At this point, we again use randomness
 		to break ties. Ideally, we would like one of $q_r$ or $q_l$ to continue looking for the next available point,
 		and the other to take its intended point. This happens with probability $\frac{1}{2}$. Otherwise, the robots 
@@ -754,33 +805,30 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 		All of the steps described tell us that our algorithm will run in a number of steps linear in the 
 		number of robots.  
 
-		% TODO: mention that both size and orientation are preserved unlike previous algorithm
 
 		\subsection{PUDDLE is collision free} 
 		As in the previous section, we consider the algorithm in three separate parts. During the START phase
-		we can be assured that arranging the $n$ robots on $l$ and $r$ will be collision-free because only the
+		we can be assured that arranging the $n$ robots on $v_1$ and $v_2$ will be collision-free because only the
 		robot with the largest $y$-coordinate (called $y_{max}$) will move. In the case of ties, only the two robots
 		on the horizontal line through $y_{max}$ with the smallest and largest $x$-coordinates will move, and toward
 		vertical line $l'$ as given by the algorithm to prevent collisions. 
 		If a position on $l'$ is already occupied, a robot $i$
-		moves in the positive $y$ direction. Since, $i$ was already the top-most robot not on $l$ or $r$, no collision
+		moves in the positive $y$ direction. Since, $i$ was already the top-most robot not on $v_1$ or $v_2$, no collision
 		can occur in this move. \\
 
 		In the unbalance stage of the algorithm, we note that all robots on a given side $L'$ move vertically at a point 
 		that is a unique distance from $l'$. Furthermore only the robot with the smallest $y$ coordinate
 		moves to enter the middle line $m$. Thus, collisions cannot occur between robots of on the same side $L'$.
-		To avoid collisions between a robot moving from $l$ and another moving from $r$ into line $m$, we ensure each
+		To avoid collisions between a robot moving from $v_1$ and another moving from $v_2$ into line $m$, we ensure each
 		robot $i$ only enter $m$ on point $p_i$ if there is no other robot $j$ moving toward a point $p_j$ on $m$
 		that is within unit distance of $p_i$. If there is such a robot, $i$ stops, and only moves toward $p_i$ if
 		robot $j$ has moved vertically, away from point $p_j$, or if $i$ decides to move vertically to find a 
-		different entry point into $m$. Hence, collisions between robots from $l$ and $r$ are avoided as well. \\
+		different entry point into $m$. Hence, collisions between robots from $v_1$ and $v_2$ are avoided as well. \\
 
 		In the formPattern() and leaderPattern() stages, we avoid collisions by having only a single robot move to
 		it's target position in pattern $\PP$ at any given time. The points in $\PP$ are sequenced by 
 		decreasing $y$ coordinate, and decreasing $x$ coordinate. Thus, when robot $i$ moves to point $\PP_i$ in 
 		the final configuration, none of the robots already in the configuration will get in the way of $i$. \\
-
-		% TODO: move robots back from m to $l$ or $r$
 
 		\subsection{additional properties of algorithm} 
 		Our algorithm also observes some additional properties that the original algorithm by Flocchini did not.
@@ -815,9 +863,8 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 \section{Helper Procedures for PUDDLE}
 \subsection{topmostLR()} 
 
-% TODO define robots not on $l, r$: 
 % We refer to robots that aren't on the $l$ or $r$ to be unaligned
-	Let $y_max$ be the largest y-coordinate of any unaligned robot. 
+	Let $y_{max}$ be the largest y-coordinate of any unaligned robot. 
 	This method returns true if robot $i$ is the topmost unaligned robot by $y$ coordinate. In the
 	case of ties, the method returns true only if $i$ is the left-most or right-most 
 	robot on the horizontal line through $y_{max}$.
@@ -844,7 +891,7 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 
 \subsection{isAligned()} 
 
-	This method computes the convex hull vertical tangent lines $l$ and $r$ according
+	This method computes the convex hull vertical tangent lines $v_1$ and $v_2$ according
 	to the local view of robot $i$. We return true if $i$ is on one of the 
 	computed tangents.
 \begin{algorithm}[H]
@@ -861,7 +908,7 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 \end{algorithm}
 
 \subsection{getUnbalanced()} 
-	Here we apply randomness to have a robot move from either $l$ or $r$ to $m$.
+	Here we apply randomness to have a robot move from either $v_1$ or $v_2$ to $m$.
 	This helper module gives our algorithm the additional power necessary to 
 	solve APF in the even case.
 \begin{algorithm}[H]
@@ -884,8 +931,6 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 		\State dest = $p$
 	\EndIf
 
-
-	% TODO: be precise about how robots align selves on $m$
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
@@ -898,7 +943,7 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 	\Procedure{lineup}{$\EE_i$, $\PP$}
 		
 		\Comment ensure that top-most guys line up
-		\State Let $t_l$ and $t_r$ refer to the top-most robots on $l$ and $r$
+		\State Let $t_l$ and $t_r$ refer to the top-most robots on $v_1$ and $v_2$
 		\If{ $i$ is  $t_l$ and $y_{t_l} > y_{t_r}$}
 			\State set dest = $(x_i, y_{t_r})$
 		\ElsIf{ $i$ is  $t_r$ and $y_{t_r} > y_{t_l}$}
@@ -917,7 +962,8 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 	\begin{algorithmic}[1]
 	\Procedure{formPattern}{$\EE_i$, $\PP$}
 
-		\If{$i$ is top-most robot on $l$} % distinguish between $l$ after x-axis consensus and global $x$ explain
+		\State let $l$ refer to the vertical axis among $v_1$ and $v_2$ with a minority of robots
+		\If{$i$ is top-most robot on $l$} 
 			\State let $h$ = height of target pattern $\PP$.
 			\State dest = $(x_i + 1, y_i + h)$
 		\EndIf
@@ -1002,15 +1048,9 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 	\State state = DONE
 
 
-	% TODO: setup an artifical ordering notation on the points in the shape!!
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
-%% If you have bibdatabase file and want bibtex to generate the
-%% bibitems, please use
-%%
-%%  \bibliographystyle{elsarticle-num} 
-%%  \bibliography{<your bibdatabase>}
 
 \bibliographystyle{elsarticle-num} 
 \bibliography{report}
