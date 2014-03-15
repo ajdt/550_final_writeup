@@ -341,7 +341,7 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 		The OneAxis assumption requires that all $n$ robots have consensus on the orientation of one axis. 
 		Without loss of generality, we assume the $y$ axis is agreed upon by all robots. Because all robots
 		agree on the orientation of the $y$ axis, they can agree on the location of vertical axes $v_1$, 
-		$v_2$ which go through the left-most and right-most robots on the plane. In \ref{oddfig1}, for example,
+		$v_2$ which go through the left-most and right-most robots on the plane. In figure \ref{oddfig1}, for example,
 		$r_1$ and $r_3$ are the left-most and right-most robots with such axes going through their positions.
 		Note that because we do not have consensus on the direction of the $x$ axis, an arbitrary pair of robots
 		$r_i$ and $r_j$ may have a different notion of which among $r_1$ and $r_3$ is the left-most and which is
@@ -356,7 +356,6 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 
 	\begin{figure}[H]
 		\begin{subfigure}{0.5\textwidth}
-		\label{oddfig1}
 		\centering
 		\begin{tikzpicture}[scale=0.50]
 			\draw[help lines] (0,0) grid (6,6);
@@ -381,9 +380,9 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 			\node[right] at (5,6) {$v_2$} ;
 		\end{tikzpicture}
 		\caption{Vertical Axes}
+		\label{oddfig1}
 		\end{subfigure}
 		\begin{subfigure}{0.5\textwidth}
-		\label{oddfig2}
 		\centering
 		\begin{tikzpicture}[scale=0.50]
 			\draw[help lines] (0,0) grid (6,6);
@@ -407,6 +406,7 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 			\node[right] at (5,6) {$v_2$} ;
 		\end{tikzpicture}
 			\caption{Leader is elected} 
+		\label{oddfig2}
 		\end{subfigure}
 		\caption{APF Solved for odd $n$ }
 	\end{figure}
@@ -419,10 +419,10 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 	\end{theorem} 
 
 	\begin{proof}
-		The proof follows easily when we consider the right counterexample as in \ref{evenfig2}. Even
+		The proof follows easily when we consider the right counterexample as in figure \ref{evenfig2}. Even
 		though we have agreement on a single axis, the counterexample constructs a kind of symmetry that
 		cannot be broken deterministically. Observer that, for each robot $r_i$ there is another robot 
-		$r_j$ with a symmetric view of the world. In \ref{evenfig2} $r_2$ and $r_4$ have symmetric
+		$r_j$ with a symmetric view of the world. In figure \ref{evenfig2} $r_2$ and $r_4$ have symmetric
 		views of the world for example since their $x$ axes are oriented in opposite directions, and
 		the relative positioning of the other robots is the same from their point of view. The same 
 		can be said about $r_1$ and $r_3$. With a deterministic protocol then, each pair of symmetric robots
@@ -431,7 +431,6 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 	\end{proof}
 	\begin{figure}[H]
 		\begin{subfigure}{0.5\textwidth}
-		\label{evenfig1}
 		\centering
 		\begin{tikzpicture}[scale=0.50]
 			\draw[help lines] (0,0) grid (6,6);
@@ -447,9 +446,9 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 			\node[above] at (3,5) {$r_4$} ;
 		\end{tikzpicture}
 		\caption{Target Pattern}
+		\label{evenfig1}
 		\end{subfigure}
 		\begin{subfigure}{0.5\textwidth}
-		\label{evenfig2}
 		\centering
 		\begin{tikzpicture}[scale=0.50]
 			\draw[help lines] (0,0) grid (6,6);
@@ -475,6 +474,7 @@ In our work, we examine a robot model that is history oblivious, disk-based, and
 			\node[above] at (4, 5) {$x$};
 		\end{tikzpicture}
 			\caption{Initial Configuration} 
+		\label{evenfig2}
 		\end{subfigure}
 		\caption{APF Solved for odd $n$ }
 	\end{figure}
